@@ -12,7 +12,7 @@ env:
   SYNC_APP_ID:        ${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
   SYNC_CLIENT_ID:     ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
   SYNC_CLIENT_SECRET: ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_SECRET }}
-  SYNC_PRIVATE_KEY: ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
+  SYNC_PRIVATE_KEY:   ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
 
 jobs:
   template-sync:
@@ -27,8 +27,8 @@ jobs:
         id: generate_token
         uses: tibdex/github-app-token@v2 # https://github.com/tibdex/github-app-token
         with:
-          app_id: '${{ env.SYNC_APP_ID }}'
-          private_key: '${{ env.SYNC_PRIVATE_KEY }}'
+          app_id:      ${{ env.SYNC_APP_ID }}
+          private_key: ${{ env.SYNC_PRIVATE_KEY }}
 
       - name: Checkout # https://github.com/actions/checkout#usage
         uses: actions/checkout@v4
@@ -41,7 +41,6 @@ jobs:
           source_repo_path: ${{ env.SOURCE_REPOSITORY }}
           upstream_branch:  ${{ env.SOURCE_BRANCH }}
           github_token:     ${{ steps.generate_token.outputs.token }}
-
-          pr_title: 'upstream merge template repository'
+          pr_title:      'upstream merge template repository'
           pr_commit_msg: 'chore(template): merge template changes :up:'
-          pr_labels: 'template', 'upstream', 'sync'
+          pr_labels:     'template', 'upstream', 'sync'
