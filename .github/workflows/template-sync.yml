@@ -15,7 +15,7 @@ env:
 
 jobs:
   template-sync:
-    if: github.repository != env.SOURCE_REPOSITORY
+    if: ${{ !startsWith(github.repository, 'madbuilds/template-') }}
     runs-on: ubuntu-latest
     permissions: # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
       contents: write
@@ -42,4 +42,4 @@ jobs:
           upstream_branch: ${{ env.SOURCE_BRANCH }}
           pr_title: "upstream merge template repository"
           pr_commit_msg: "chore(template): merge template changes :up:"
-          pr_labels: "template_sync,upstream,sync"
+          pr_labels: "template_sync, upstream, sync"
