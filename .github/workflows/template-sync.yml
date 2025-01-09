@@ -1,0 +1,44 @@
+# File .github/workflows/template-sync.yml
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+env:
+  SOURCE_BRANCH:     master
+  SOURCE_REPOSITORY: madbuilds/template-library
+
+  SYNC_APP_ID:        ${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
+  SYNC_CLIENT_ID:     ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
+  SYNC_CLIENT_SECRET: ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_SECRET }}
+  SYNC_PRIVATE_KEY:   ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
+
+jobs:
+  template-sync:
+    runs-on: ubuntu-latest
+    permissions: # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Token (sync-app)
+        id: generate_token
+        uses: tibdex/github-app-token@v2 # https://github.com/tibdex/github-app-token
+        with:
+          app_id:      ${{ env.SYNC_APP_ID }}
+          private_key: ${{ env.SYNC_PRIVATE_KEY }}
+
+      - name: Checkout # https://github.com/actions/checkout#usage
+        uses: actions/checkout@v4
+        with:
+          token: '${{ steps.generate_token.outputs.token }}'
+
+      - name: actions-template-sync
+        uses: AndreasAugustin/actions-template-sync@v2.4.2
+        with:
+          github_token: ${{ steps.generate_token.outputs.token }}
+          source_repo_path: ${{ env.SOURCE_REPOSITORY }}
+          upstream_branch: ${{ env.SOURCE_BRANCH }}
+          pr_title: "upstream merge template repository"
+          pr_commit_msg: "chore(template): merge template changes :up:"
+          pr_labels: "template_sync, upstream, sync"
