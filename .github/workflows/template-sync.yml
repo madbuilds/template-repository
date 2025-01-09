@@ -1,5 +1,4 @@
 # File .github/workflows/template-sync.yml
-
 on:
   schedule:
     - cron: "0 0 * * 1"
@@ -16,7 +15,6 @@ env:
 
 jobs:
   template-sync:
-    #if: github.repository != env.SOURCE_REPOSITORY
     runs-on: ubuntu-latest
     permissions: # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
       contents: write
@@ -41,6 +39,3 @@ jobs:
           github_token: ${{ steps.generate_token.outputs.token }}
           source_repo_path: ${{ env.SOURCE_REPOSITORY }}
           upstream_branch: ${{ env.SOURCE_BRANCH }}
-          pr_title: 'upstream merge template repository'
-          pr_commit_msg: 'chore(template): merge template changes :up:'
-          pr_labels: 'template', 'upstream', 'sync'
