@@ -38,7 +38,7 @@ jobs:
       - name: actions-template-sync     # https://github.com/marketplace/actions/actions-template-sync#usage
         uses: AndreasAugustin/actions-template-sync@v2
         with:
-          github_token: ${{ steps.generate_token.outputs.token }}
+          #github_token: ${{ steps.generate_token.outputs.token }}
           source_repo_path: ${{ env.SOURCE_REPOSITORY }}
           upstream_branch: ${{ env.SOURCE_BRANCH }}
           pr_title: 'upstream merge template repository'
