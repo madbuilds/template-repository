@@ -40,3 +40,4 @@ jobs:
           source_repo_path: ${{ env.SOURCE_REPOSITORY }}
           upstream_branch: ${{ env.SOURCE_BRANCH }}
           pr_title: "upstream merge template repository"
+          pr_commit_msg: "chore(template): merge template changes :up:"
