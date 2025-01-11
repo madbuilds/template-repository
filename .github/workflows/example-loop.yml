@@ -16,7 +16,6 @@ env:
   SYNC_CLIENT_ID:     ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
   SYNC_CLIENT_SECRET: ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_SECRET }}
   SYNC_PRIVATE_KEY:   ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
-  SYNC_APP_TOKEN:     DUMMY
 
 jobs:
   setup:
@@ -24,21 +23,14 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.project }}
     steps:
-      - name: Auth # https://github.com/tibdex/github-app-token
-        id: auth
-        uses: tibdex/github-app-token@v2
-        with:
-          app_id: ${{ env.SYNC_APP_ID }}
-          private_key: ${{ env.SYNC_PRIVATE_KEY }}
-          revoke: false
       - name: Setup
         id: matrix
         run: |
           echo "project=[ \
-              \"test\",      \
+              \"a\",      \
+              \"b\",      \
+              \"c\"       \
           ]" >> $GITHUB_OUTPUT
-      - run: |
-          echo "SYNC_APP_TOKEN=${{ steps.auth.outputs.token }}" >> $GITHUB_ENV
   build:
     needs:
       - setup
@@ -49,11 +41,3 @@ jobs:
     steps:
       - run: |
           echo "in loop: ${{ matrix.project }}"
-      - run: |
-          curl -L \
-            -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.USER_PAT_TOKEN }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/madbuilds/${{ matrix.project }}/actions/variables \
-            -d '{"name":"USERNAME","value":"test"}'
