@@ -1,15 +1,6 @@
-# File .github/workflows/secrets/secrets-update.yml
+# File .github/workflows/example-loop
 on:
   workflow_dispatch:
-
-env:
-  SOURCE_BRANCH:     master
-  SOURCE_REPOSITORY: madbuilds/template-library
-
-  SYNC_APP_ID:        ${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
-  SYNC_CLIENT_ID:     ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
-  SYNC_CLIENT_SECRET: ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_SECRET }}
-  SYNC_PRIVATE_KEY:   ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
 
 jobs:
   setup:
