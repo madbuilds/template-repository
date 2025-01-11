@@ -1,11 +1,5 @@
 # File .github/workflows/secrets/secrets-update.yml
 on:
-  pull_request:
-    types:
-      - opened
-  push:
-    branches:
-      - loop-action
   workflow_dispatch:
 
 env:
