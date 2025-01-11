@@ -1,2 +1,2 @@
-workflows/example-loop.yml
-workflows/secrets-update.yml
+./.github/workflows/example-loop.yml
+./.github/workflows/secrets-update.yml
