@@ -6,7 +6,7 @@ on:
 
 env:
   SOURCE_BRANCH:     master
-  SOURCE_REPOSITORY: madbuilds/template-library
+  SOURCE_REPOSITORY: madbuilds/template-java-library
 
   SYNC_APP_ID:        ${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
   SYNC_CLIENT_ID:     ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
@@ -40,6 +40,8 @@ jobs:
           github_token: ${{ steps.auth.outputs.token }}
           source_repo_path: ${{ env.SOURCE_REPOSITORY }}
           upstream_branch: ${{ env.SOURCE_BRANCH }}
-          pr_title: "upstream merge template repository"
-          pr_commit_msg: "chore(template): merge template changes :up:"
+          template_sync_ignore_file_path: ".templatesyncignore"
+          pr_branch_name_prefix: "sync/upstream_change"
+          pr_commit_msg: "sync(template): merge template changes :up:"
           pr_labels: "template_sync,upstream,sync"
+          pr_title: "[UPSTREAM] Template Repository - synchronize"
