@@ -1,12 +1,17 @@
 # File .github/workflows/template-sync.yml
+
+# AUTOMATIC SYNCHRONIZE WITH TEMPLATE: helps to synchronize repositories.
+# template changes will be applied to project repository (except files in .templatesyncignore)
+
 on:
   schedule:
     - cron: "0 0 * * 1"
   workflow_dispatch:
 
 env:
+  OWNER_NAME: ${{ github.repository_owner }}
   SOURCE_BRANCH:     master
-  SOURCE_REPOSITORY: madbuilds/template-java-library
+  SOURCE_REPOSITORY: ${{ github.repository_owner }}/template-java-library
 
   SYNC_APP_ID:        ${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
   SYNC_CLIENT_ID:     ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
@@ -15,7 +20,7 @@ env:
 
 jobs:
   template-sync:
-    if: ${{ !startsWith(github.repository, 'madbuilds/template-') }}
+    if: ${{ !startsWith(github.repository, '${{ env.OWNER_NAME }}/template-') }}
     runs-on: ubuntu-latest
     permissions: # https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
       contents: write
