@@ -84,5 +84,5 @@ jobs:
           branch: cleanup-template
           title: "Cleanup template and move files"
           body: "This PR moves files from `./template/${{ env.language }}/${{ env.type }}` to root and removes the `template` folder."
-          base: main
+#          base: main
           delete-branch: true
