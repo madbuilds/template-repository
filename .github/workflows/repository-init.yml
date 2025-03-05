@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 jobs:
   cleanup:
     runs-on: ubuntu-latest
@@ -87,4 +88,4 @@ jobs:
           title: "Cleanup template and move files"
           body: "This PR moves files from `./template/${{ env.language }}/${{ env.type }}` to root and removes the `template` folder."
           base: ${{ env.branch }}
-          delete-branch: true
+#          delete-branch: true
