@@ -9,6 +9,8 @@ on:
   # Allows manual triggering
   workflow_dispatch:
 
+permissions:
+  contents: write
 jobs:
   cleanup:
     runs-on: ubuntu-latest
