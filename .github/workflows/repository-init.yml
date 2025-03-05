@@ -49,8 +49,10 @@ jobs:
           echo "Event path: $$GITHUB_EVENT_PATH"
           LANGUAGE=$(jq -r '.repository.custom_properties.language' < "$GITHUB_EVENT_PATH")
           TYPE=$(jq -r '.repository.custom_properties.type' < "$GITHUB_EVENT_PATH")
+          echo "Detected branch name: ${{ github.ref_name }}"
           echo "Detected language: $LANGUAGE"
           echo "Detected type: $TYPE"
+          echo "branch=${{ github.ref_name }}" >> $GITHUB_ENV
           echo "language=$LANGUAGE" >> $GITHUB_ENV
           echo "type=$TYPE" >> $GITHUB_ENV
 
@@ -84,5 +86,5 @@ jobs:
           branch: cleanup-template
           title: "Cleanup template and move files"
           body: "This PR moves files from `./template/${{ env.language }}/${{ env.type }}` to root and removes the `template` folder."
-          base: ${{ github.ref_name }}
+          base: ${{ env.branch }}
           delete-branch: true
