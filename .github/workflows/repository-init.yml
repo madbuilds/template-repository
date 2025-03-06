@@ -1,4 +1,4 @@
-name: Initialize repository on creation
+name: init repository on create
 
 on:
   push:
@@ -9,22 +9,30 @@ on:
   # Allows manual triggering
   workflow_dispatch:
 
+env:
+  INIT_BRANCH: init
+  SOURCE_BRANCH: ${{ github.ref_name }}
+  REPOSITORY_TYPE:     $(jq -r '.repository.custom_properties.type // "default"' < "$GITHUB_EVENT_PATH")
+  REPOSITORY_LANGUAGE: $(jq -r '.repository.custom_properties.language // "unknown"' < "$GITHUB_EVENT_PATH")
+
 permissions:
   contents: write
   pull-requests: write
+
 jobs:
-  cleanup:
+  initialize:
+    if: ${{ !startsWith(github.repository, 'madbuilds/template-') }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Ensures full history is available for PR
 
-      - name: Check if repository was recently created
+      - name: is recently created
         run: |
           if [ $(git rev-list --count HEAD) -gt 1 ]; then
-            echo "Repository has multiple commits, skipping cleanup."
+            echo "Repository has multiple commits, skipping initialization"
             exit 1
           fi
 
@@ -44,48 +52,56 @@ jobs:
 #          echo "language=${LANGUAGE:-unknown}" >> $GITHUB_ENV
 #          echo "type=${TYPE:-default}" >> $GITHUB_ENV
 
-      - name: Get repository variables
+      - name: get repository properties
         id: repo-vars
         run: |
-          echo "Event path: $$GITHUB_EVENT_PATH"
-          LANGUAGE=$(jq -r '.repository.custom_properties.language' < "$GITHUB_EVENT_PATH")
-          TYPE=$(jq -r '.repository.custom_properties.type' < "$GITHUB_EVENT_PATH")
-          echo "Detected branch name: ${{ github.ref_name }}"
-          echo "Detected language: $LANGUAGE"
-          echo "Detected type: $TYPE"
-          echo "branch=${{ github.ref_name }}" >> $GITHUB_ENV
-          echo "language=$LANGUAGE" >> $GITHUB_ENV
-          echo "type=$TYPE" >> $GITHUB_ENV
+          echo "Detected branch name: ${{ env.SOURCE_BRANCH }}"
+          echo "Detected language:    ${{ env.REPOSITORY_LANGUAGE }}"
+          echo "Detected type:        ${{ env.REPOSITORY_TYPE }}"
 
-      - name: Copy files dynamically
+      - name: copy template files
         run: |
-          TEMPLATE_PATH="./template/${{ env.language }}/${{ env.type }}"
+          TEMPLATE_PATH="./template/${{ env.REPOSITORY_LANGUAGE }}/${{ env.REPOSITORY_TYPE }}"
           if [ -d "$TEMPLATE_PATH" ]; then
-            echo "Found template path $TEMPLATE_PATH. Copyinh."
-            cp -r "$TEMPLATE_PATH"/* ./
+            echo "Copying file from $TEMPLATE_PATH"
+            shopt -s dotglob
+            cp -rfv "$TEMPLATE_PATH"/* ./
+            shopt -u dotglob
           else
-            echo "Template path $TEMPLATE_PATH does not exist. Exiting."
-            exit 1
+            echo "Template path $TEMPLATE_PATH does not exist. skipping..."
           fi
 
-      - name: Remove template folder
-        run: rm -rf ./template
+      - name: update template-sync ignore file
+        run: |
+          TEMPLATE_PATH="./template/${{ env.REPOSITORY_LANGUAGE }}/${{ env.REPOSITORY_TYPE }}"
+          if [ -d "$TEMPLATE_PATH" ]; then
+            echo "updating template ignore file"
+          else
+            echo "Template path $TEMPLATE_PATH does not exist. skipping..."
+          fi
 
-      - name: Commit and push changes
+      - name: remove template files
+        run: |
+          rm -rf ./.github/workflows/example-loop.yml
+          rm -rf ./.github/workflows/repository-init.yml
+          rm -rf ./.github/workflows/secrets-update.yml
+          rm -rf ./template
+
+      - name: commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b cleanup-template
+          git checkout -b ${{ env.INIT_BRANCH }}
           git add .
           git commit -m "Cleanup template and move files"
-          git push origin cleanup-template
+          git push origin ${{ env.INIT_BRANCH }}
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: cleanup-template
-          title: "Cleanup template and move files"
-          body: "This PR moves files from `./template/${{ env.language }}/${{ env.type }}` to root and removes the `template` folder."
-          base: ${{ env.branch }}
-#          delete-branch: true
+      - name: create pull request
+        run: |
+          gh pr create \
+            -B ${{ env.SOURCE_BRANCH }} \
+            -H ${{ env.INIT_BRANCH }} \
+            --title 'Initialize repository on create (${{ env.INIT_BRANCH }} -> ${{ env.SOURCE_BRANCH }})' \
+            --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
