@@ -1,3 +1,8 @@
+# File .github/workflows/repository-init.yml
+
+# after new repository been created from this template does trigger:
+# depending on repository custom_properties unpack sources from ./template/
+
 name: init repository on create
 
 on:
