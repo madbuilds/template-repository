@@ -17,8 +17,8 @@ on:
 env:
   INIT_BRANCH: init
   SOURCE_BRANCH: ${{ github.ref_name }}
-  REPOSITORY_TYPE:     $(jq -r '.repository.custom_properties.type // "default"' < "$GITHUB_EVENT_PATH")
-  REPOSITORY_LANGUAGE: $(jq -r '.repository.custom_properties.language // "unknown"' < "$GITHUB_EVENT_PATH")
+  REPOSITORY_TYPE:     $(jq -r '.repository.custom_properties.type     | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
+  REPOSITORY_LANGUAGE: $(jq -r '.repository.custom_properties.language | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
 
 permissions:
   contents: write
