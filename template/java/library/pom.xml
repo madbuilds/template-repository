@@ -3,12 +3,55 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>one.mad.lib</groupId>
+    <groupId>com.github.mad.lib</groupId>
     <artifactId>template</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <name>template</name>
     <description>template</description>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>https://opensource.org/license/apache-2-0</url>
+        </license>
+    </licenses>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <repositories>
+                <repository>
+                    <id>github-repo</id>
+                    <url>https://maven.pkg.github.com/madbuilds/repo</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>central-repo</id>
+                    <url>https://repo1.maven.org/maven2</url>
+                </repository>
+            </repositories>
+            <distributionManagement>
+                <repository>
+                    <id>github-dist</id>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>https://maven.pkg.github.com/${GITHUB_REPOSITORY}</url>
+                </repository>
+                <snapshotRepository>
+                    <id>github-dist</id>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <url>https://maven.pkg.github.com/${GITHUB_REPOSITORY}</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
