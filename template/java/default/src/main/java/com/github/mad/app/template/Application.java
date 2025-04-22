@@ -1,4 +1,4 @@
-package one.mad.lib.template;
+package com.github.mad.app.template;
 
 import lombok.extern.slf4j.Slf4j;
 
