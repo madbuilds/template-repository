@@ -10,82 +10,41 @@ on:
       - published
 
 env:
-  DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-  MAVEN_SETTINGS_PATH: .github/maven/settings.xml
-
-  GITHUB_ACTOR: ${{ github.actor }}
+  REPOSITORY_TYPE: $(jq -r '.repository.custom_properties.type     | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GITHUB_REPOSITORY: ${{ github.repository }}
-
   GITHUB_ACTIONS_NAME: github-actions[bot]
-  GITHUB_ACTIONS_MAIL: github-actions[bot]@users.noreply.github.com
 
 jobs:
-  publish:
+  repository:
     if: ${{ !startsWith(github.repository, 'madbuilds/template-') }}
+    runs-on: ubuntu-latest
+    outputs:
+      type: ${{ steps.validate.outputs.type }}
+    steps:
+      - name: validate repository type
+        id: validate
+        run: |
+          echo "repository type: ${{ env.REPOSITORY_TYPE }}"
+          echo "type=${{ env.REPOSITORY_TYPE }}" >> $GITHUB_OUTPUT
+
+  publish-library:
+    needs: repository
+    if: needs.repository.outputs.type == 'library'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
-
     steps:
       - uses: actions/checkout@v4
+      - name: build deploy
+        uses: ./.github/actions/publish/release/library
 
-      - name: VERIFY version TAG
-        id: verify_version
-        run: |
-          POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          POM_VERSION=${POM_VERSION/-SNAPSHOT/}
-
-          TAG_VERSION=${GITHUB_REF#refs/tags/}
-          VERSION=${TAG_VERSION#v}
-
-          echo "Version: $TAG_VERSION -> $VERSION (pom: $POM_VERSION)"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-          if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::ERROR: invalid version format '$VERSION'"
-            echo "::warning::expected format: MAJOR.MINOR.PATCH (v1.2.3 or 1.2.3)"
-            exit 1
-          fi
-
-          if [ "$POM_VERSION" != "$VERSION" ]; then
-            echo "::error::ERROR: release and pom versions mismatch"
-            echo "::warning::pom.xml version($POM_VERSION) != release version($VERSION)"
-            exit 1
-          fi
-
-      - name: SETUP Java21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'oracle'
-          cache: maven
-
-      - name: PRE_DOWNLOAD dependencies
-        run: mvn dependency:go-offline --settings ${{ env.MAVEN_SETTINGS_PATH }}
-
-      - name: UPDATE pom version
-        run: mvn versions:set -DnewVersion=${{ env.VERSION }} --settings ${{ env.MAVEN_SETTINGS_PATH }}
-
-      - name: BUILD and PUBLISH
-        run: mvn --batch-mode deploy --settings ${{ env.MAVEN_SETTINGS_PATH }}
-
-      - name: INCREMENT version
-        run: |
-          #generate next snapshot version          
-          IFS='.' read -r majorVersion minorVersion patchVersion <<< "${{ env.VERSION }}"
-          SNAPSHOT_VERSION="${majorVersion}.$((minorVersion + 1)).0-SNAPSHOT"
-          
-          echo "CURRENT  version: ${{ env.VERSION }}"
-          echo "SNAPSHOT version: $SNAPSHOT_VERSION"
-          
-          #set new snapshot version for next iteration
-          mvn versions:set -DnewVersion=$SNAPSHOT_VERSION --settings ${{ env.MAVEN_SETTINGS_PATH }}
-
-      - name: COMMIT and PUSH new version
-        run: |
-          git config --global user.name  '${{ env.GITHUB_ACTIONS_NAME }}'
-          git config --global user.email '${{ env.GITHUB_ACTIONS_MAIL }}'
-          git commit -am "Bump version for next dev iteration"
-          git push origin HEAD:${{ env.DEFAULT_BRANCH }}
+  publish-service:
+    needs: repository
+    if: needs.repository.outputs.type == 'service'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
