@@ -65,10 +65,10 @@ runs:
         TIMESTAMP=$(date +'%Y%m%d-%H%M')
         BRANCH_NAME=${{ github.ref_name }}
         BRANCH_NAME=${BRANCH_NAME//\//-}
-    
+        
         SNAPSHOT_VERSION=${BRANCH_NAME}-SNAPSHOT
         echo "SNAPSHOT version(for: $POM_VERSION - $TIMESTAMP): ${SNAPSHOT_VERSION}"
-    
+        
         mvn versions:set -DnewVersion=${SNAPSHOT_VERSION} --settings ${{ inputs.settings_path }}
       env:
         GITHUB_ACTOR: ${{ inputs.github_actor }}

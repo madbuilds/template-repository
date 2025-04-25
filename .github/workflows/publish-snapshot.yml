@@ -14,11 +14,8 @@ on:
 
 env:
   REPOSITORY_TYPE: $(jq -r '.repository.custom_properties.type     | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
-  DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GITHUB_ACTIONS_NAME: github-actions[bot]
-  GITHUB_ACTIONS_MAIL: github-actions[bot]@users.noreply.github.com
 
 jobs:
   validate:
@@ -27,7 +24,6 @@ jobs:
     outputs:
       run: ${{ steps.is_required.outputs.run }}
       type: ${{ steps.repository.outputs.type }}
-
     steps:
       - uses: actions/checkout@v4
       - name: is publish required
@@ -55,7 +51,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-
     steps:
       - uses: actions/checkout@v4
       - name: build deploy
@@ -68,6 +63,5 @@ jobs:
     permissions:
       contents: read
       packages: write
-
     steps:
       - uses: actions/checkout@v4
