@@ -18,12 +18,12 @@ env:
   GITHUB_ACTIONS_NAME: github-actions[bot]
 
 jobs:
-  validate:
+  repository:
     if: ${{ !startsWith(github.repository, 'madbuilds/template-') }}
     runs-on: ubuntu-latest
     outputs:
       run: ${{ steps.is_required.outputs.run }}
-      type: ${{ steps.repository.outputs.type }}
+      type: ${{ steps.validate.outputs.type }}
     steps:
       - uses: actions/checkout@v4
       - name: is publish required
@@ -38,15 +38,15 @@ jobs:
             echo "PROCESS: SNAPSHOT publication required"
           fi
 
-      - name: repository type
-        id: repository
+      - name: validate repository type
+        id: validate
         run: |
           echo "repository type: ${{ env.REPOSITORY_TYPE }}"
           echo "type=${{ env.REPOSITORY_TYPE }}" >> $GITHUB_OUTPUT
 
   publish-library:
-    needs: validate
-    if: needs.validate.outputs.run == 'true' && needs.validate.outputs.type == 'library'
+    needs: repository
+    if: needs.repository.outputs.run == 'true' && needs.repository.outputs.type == 'library'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -57,8 +57,8 @@ jobs:
         uses: ./.github/actions/publish/snapshot/library
 
   publish-service:
-    needs: validate
-    if: needs.validate.outputs.run == 'true' && needs.validate.outputs.type == 'service'
+    needs: repository
+    if: needs.repository.outputs.run == 'true' && needs.repository.outputs.type == 'service'
     runs-on: ubuntu-latest
     permissions:
       contents: read

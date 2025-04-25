@@ -15,21 +15,21 @@ env:
   GITHUB_ACTIONS_NAME: github-actions[bot]
 
 jobs:
-  validate:
+  repository:
     if: ${{ !startsWith(github.repository, 'madbuilds/template-') }}
     runs-on: ubuntu-latest
     outputs:
-      type: ${{ steps.repository.outputs.type }}
+      type: ${{ steps.validate.outputs.type }}
     steps:
-      - name: repository type
-        id: repository
+      - name: validate repository type
+        id: validate
         run: |
           echo "repository type: ${{ env.REPOSITORY_TYPE }}"
           echo "type=${{ env.REPOSITORY_TYPE }}" >> $GITHUB_OUTPUT
 
   publish-library:
-    needs: validate
-    if: needs.validate.outputs.type == 'library'
+    needs: repository
+    if: needs.repository.outputs.type == 'library'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -40,8 +40,8 @@ jobs:
         uses: ./.github/actions/publish/release/library
 
   publish-service:
-    needs: validate
-    if: needs.validate.outputs.type == 'service'
+    needs: repository
+    if: needs.repository.outputs.type == 'service'
     runs-on: ubuntu-latest
     permissions:
       contents: write
