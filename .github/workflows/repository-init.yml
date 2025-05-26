@@ -1,7 +1,9 @@
 # File .github/workflows/repository-init.yml
-
-# after new repository been created from this template does trigger:
-# depending on repository custom_properties unpack sources from ./template/
+# DESCRIPTION: once new repo created from this template:
+#               * retrieves repository custom_properties
+#               * copy template from: ./template/${LANGUAGE}/${TYPE}
+#               * removes unnecessary files
+#              for easily quick start with coding (avoid creating common files manually)
 
 name: init repository on create
 
@@ -17,6 +19,7 @@ on:
 env:
   INIT_BRANCH: init
   SOURCE_BRANCH: ${{ github.ref_name }}
+  GITHUB_ACTIONS_NAME: github-actions[bot]
   REPOSITORY_TYPE:     $(jq -r '.repository.custom_properties.type     | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
   REPOSITORY_LANGUAGE: $(jq -r '.repository.custom_properties.language | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
 
@@ -40,22 +43,6 @@ jobs:
             echo "Repository has multiple commits, skipping initialization"
             exit 1
           fi
-
-#      - name: Get repository variables
-#        id: repo-vars
-#        env:
-#          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        run: |
-#          REPO_NAME="${{ github.repository }}"
-#
-#          LANGUAGE=$(gh api repos/$REPO_NAME --jq '.custom_properties.language // "unknown"')
-#          TYPE=$(gh api repos/$REPO_NAME --jq '.custom_properties.type // "default"')
-#
-#          echo "Detected language: $LANGUAGE"
-#          echo "Detected type: $TYPE"
-#
-#          echo "language=${LANGUAGE:-unknown}" >> $GITHUB_ENV
-#          echo "type=${TYPE:-default}" >> $GITHUB_ENV
 
       - name: get repository properties
         id: repo-vars
@@ -94,8 +81,8 @@ jobs:
 
       - name: commit and push changes
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name  '${{ env.GITHUB_ACTIONS_NAME }}'
+          git config --global user.email '${{ env.GITHUB_ACTIONS_NAME }}@users.noreply.github.com'
           git checkout -b ${{ env.INIT_BRANCH }}
           git add .
           git commit -m "Cleanup template and move files"
