@@ -13,8 +13,6 @@ on:
   workflow_dispatch:
 
 env:
-  REPOSITORY_TYPE: $(jq -r '.repository.custom_properties.type     | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GITHUB_ACTIONS_NAME: github-actions[bot]
 
 jobs:
@@ -24,6 +22,7 @@ jobs:
     outputs:
       run: ${{ steps.is_required.outputs.run }}
       type: ${{ steps.validate.outputs.type }}
+      language: ${{ steps.validate.outputs.language }}
     steps:
       - uses: actions/checkout@v4
       - name: is publish required
@@ -40,9 +39,14 @@ jobs:
 
       - name: validate repository type
         id: validate
+        env:
+          REPOSITORY_TYPE:     $(jq -r '.repository.custom_properties.type     | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
+          REPOSITORY_LANGUAGE: $(jq -r '.repository.custom_properties.language | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
         run: |
-          echo "repository type: ${{ env.REPOSITORY_TYPE }}"
+          echo "repository type:     ${{ env.REPOSITORY_TYPE }}"
+          echo "repository language: ${{ env.REPOSITORY_LANGUAGE }}"
           echo "type=${{ env.REPOSITORY_TYPE }}" >> $GITHUB_OUTPUT
+          echo "language=${{ env.REPOSITORY_LANGUAGE }}" >> $GITHUB_OUTPUT
 
   publish-library:
     needs: repository
@@ -55,13 +59,3 @@ jobs:
       - uses: actions/checkout@v4
       - name: build deploy
         uses: ./.github/actions/publish/snapshot/library
-
-  publish-service:
-    needs: repository
-    if: needs.repository.outputs.run == 'true' && needs.repository.outputs.type == 'service'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4

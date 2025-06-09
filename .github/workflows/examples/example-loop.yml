@@ -1,4 +1,4 @@
-# File .github/workflows/example-loop
+# File .github/workflows/examples/example-loop
 on:
   workflow_dispatch:
 
