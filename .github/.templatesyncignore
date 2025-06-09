@@ -1,4 +1,3 @@
-./.github/workflows/example-loop.yml
 ./.github/workflows/secrets-update.yml
 ./.github/workflows/repository-init.yml
 ./docs/description.webp
