@@ -1,7 +1,7 @@
 # File .github/workflows/repository-init.yml
 # DESCRIPTION: once new repo created from this template:
 #               * retrieves repository custom_properties
-#               * copy template from: ./template/${LANGUAGE}/${TYPE}
+#               * copy template from: ./template/${TYPE}/${LANGUAGE}
 #               * removes unnecessary files
 #              for easily quick start with coding (avoid creating common files manually)
 
@@ -54,7 +54,7 @@ jobs:
 
       - name: copy template files
         run: |
-          TEMPLATE_PATH="./template/${{ env.REPOSITORY_LANGUAGE }}/${{ env.REPOSITORY_TYPE }}"
+          TEMPLATE_PATH="./template/${{ env.REPOSITORY_TYPE }}/${{ env.REPOSITORY_LANGUAGE }}"
           if [ -d "$TEMPLATE_PATH" ]; then
             echo "Copying file from $TEMPLATE_PATH"
             shopt -s dotglob
@@ -71,7 +71,7 @@ jobs:
 
       - name: update template-sync ignore file
         run: |
-          TEMPLATE_PATH="./template/${{ env.REPOSITORY_LANGUAGE }}/${{ env.REPOSITORY_TYPE }}"
+          TEMPLATE_PATH="./template/${{ env.REPOSITORY_TYPE }}/${{ env.REPOSITORY_LANGUAGE }}"
           if [ -d "$TEMPLATE_PATH" ]; then
             echo "updating template ignore file"
           else
