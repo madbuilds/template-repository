@@ -1,4 +1,4 @@
-# File .github/workflows/secrets-update.yml
+# File .github/workflows/repository-update.yml
 # DESCRIPTION: repos cannot use ORGANIZATION's secrets/vars on the free organization plan
 #              as is a workaround, this action sync's repo secrets with a list of repositories
 # ${secrets.MADBUILDS_TEMPLATE_SECRETS_SYNC_PAT} - required to have "repo" access for USER_PAT token
@@ -24,6 +24,7 @@ jobs:
         id: matrix
         run: |
           echo "project=[ ${{ env.REPOSITORIES }} ]" >> $GITHUB_OUTPUT
+
   update:
     needs:
       - setup
@@ -33,12 +34,16 @@ jobs:
         project: ${{ fromJSON(needs.setup.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
+
       - name: update variables
-        run: |
-          gh variable set TEST_VAR --body "Set from workflow" --repo https://github.com/${{ env.OWNER_NAME }}/${{ matrix.project }}
         env:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
+        run: |
+          gh variable set TEST_VAR --body "Set from workflow" --repo https://github.com/${{ env.OWNER_NAME }}/${{ matrix.project }}
+
       - name: update secrets
+        env:
+          GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
         run: |
           # CREATE DEPLOYMENT ENV (IF NOT EXIST)
           if gh api repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/environments/TEST --jq '.name' >/dev/null 2>&1; then
@@ -79,5 +84,16 @@ jobs:
           ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
           EOF
           )
+
+      - name: init repository
         env:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
+        run: |
+          WORKFLOW_NAME="repository-init.yml"
+          EXISTS=$(gh workflow list --repo ${{ env.OWNER_NAME }}/${{ matrix.project }} | grep "$WORKFLOW_NAME")
+          if [[ -n "$EXISTS" ]]; then
+            gh workflow run "$WORKFLOW_NAME" --repo ${{ env.OWNER_NAME }}/${{ matrix.project }}
+          else
+            echo "INITIALIZED: Workflow '$WORKFLOW_NAME' does not exist"
+            echo "INITIALIZED: Repository already been initialized"
+          fi
