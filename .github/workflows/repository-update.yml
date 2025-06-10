@@ -96,11 +96,11 @@ jobs:
           echo "Workflow list: ${WORKFLOW_LIST}"
           
           echo "GREP if init workflow exist"
-          WORKFLOW_EXIST=$(gh workflow list --repo ${{ env.OWNER_NAME }}/${{ matrix.project }} | grep "$WORKFLOW_NAME")
+          WORKFLOW_EXIST=$(gh workflow list --repo ${{ env.OWNER_NAME }}/${{ matrix.project }} | grep "${WORKFLOW_NAME}")
           echo "EXIST STATUS: ${WORKFLOW_EXIST}"
           
           if [[ -n "$WORKFLOW_EXIST" ]]; then
-            echo "workflow exist - running"
+            echo "workflow exist - running: ${WORKFLOW_NAME}"
             gh workflow run "$WORKFLOW_NAME" --repo ${{ env.OWNER_NAME }}/${{ matrix.project }}
           else
             echo "INITIALIZED: Workflow '$WORKFLOW_NAME' does not exist"
