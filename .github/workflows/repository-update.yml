@@ -95,11 +95,7 @@ jobs:
           WORKFLOW_LIST=$(gh workflow list --json id,state,path --repo ${{ env.OWNER_NAME }}/${{ matrix.project }})
           echo "Workflow list: ${WORKFLOW_LIST}"
           
-          echo "GREP if ${WORKFLOW_NAME} exist"
-          WORKFLOW_EXIST=$(gh workflow list --json id,state,path --repo ${{ env.OWNER_NAME }}/${{ matrix.project }} | grep "${WORKFLOW_NAME}")
-          echo "EXIST STATUS: ${WORKFLOW_EXIST}"
-          
-          if [[ -n "$WORKFLOW_EXIST" ]]; then
+          if [[ "$WORKFLOW_LIST" == *"${WORKFLOW_NAME}"* ]]; then
             echo "workflow exist - running: ${WORKFLOW_NAME}"
             gh workflow run "${WORKFLOW_NAME}" --repo ${{ env.OWNER_NAME }}/${{ matrix.project }} --ref master
           else
