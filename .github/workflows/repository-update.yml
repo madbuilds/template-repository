@@ -90,8 +90,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
         run: |
           WORKFLOW_NAME="repository-init.yml"
-          EXISTS=$(gh workflow list --repo ${{ env.OWNER_NAME }}/${{ matrix.project }} | grep "$WORKFLOW_NAME")
-          if [[ -n "$EXISTS" ]]; then
+          
+          echo "CHECK all workflows list"
+          WORKFLOW_LIST=$(gh workflow list --repo ${{ env.OWNER_NAME }}/${{ matrix.project }})
+          echo "Workflow list: ${WORKFLOW_LIST}"
+          
+          echo "GREP if init workflow exist"
+          WORKFLOW_EXIST=$(gh workflow list --repo ${{ env.OWNER_NAME }}/${{ matrix.project }} | grep "$WORKFLOW_NAME")
+          echo "EXIST STATUS: ${WORKFLOW_EXIST}"
+          
+          if [[ -n "$WORKFLOW_EXIST" ]]; then
+            echo "workflow exist - running"
             gh workflow run "$WORKFLOW_NAME" --repo ${{ env.OWNER_NAME }}/${{ matrix.project }}
           else
             echo "INITIALIZED: Workflow '$WORKFLOW_NAME' does not exist"
