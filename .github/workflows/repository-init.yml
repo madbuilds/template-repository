@@ -81,7 +81,7 @@ jobs:
       - name: remove template files
         run: |
           rm -rf ./.github/workflows/repository-init.yml
-          rm -rf ./.github/workflows/secrets-update.yml
+          rm -rf ./.github/workflows/repository-update.yml
           rm -rf ./template
 
       - name: commit and push changes
