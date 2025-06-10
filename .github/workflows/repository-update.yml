@@ -10,7 +10,7 @@ env:
   OWNER_NAME: "madbuilds"
   REPOSITORIES: >
     \"app-logging\",
-    \"some-service\",
+    \"some-library\",
     \"sbot\" \
 
 jobs:
