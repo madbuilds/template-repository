@@ -59,3 +59,13 @@ jobs:
       id-token: write # Optional, for OIDC
     steps:
       - uses: actions/checkout@v4
+
+      - name: Build and Publish Docker Image to GHCR
+        id: publish
+        uses: ./.github/actions/publish/snapshot/docker
+
+      - name: Output Image Digest and Tags
+        run: |
+          echo "Image Digest: ${{ steps.publish.outputs.image-digest }}"
+          echo "Image Tags: ${{ steps.publish.outputs.image-tags }}"
+          echo "test: ${{ secrets.SOME_SECRET }}"

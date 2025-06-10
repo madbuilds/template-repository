@@ -1,7 +1,7 @@
 # File .github/workflows/publish-release.yml
 
-# Runs on creating a new release tag (when this release marked as published)
-# this workflow publishes maven artifact and does increment the next SNAPSHOT version
+# Runs on creating a new release tag (when this release marked as published),
+# this workflow publishes artifact and does increment the next SNAPSHOT version
 
 name: publish RELEASE
 on:
@@ -39,3 +39,25 @@ jobs:
       id-token: write # Optional, for OIDC
     steps:
       - uses: actions/checkout@v4
+
+      - name: Build and Publish Docker Image to GHCR
+        id: publish
+        uses: ./.github/actions/publish/release/docker
+
+      - name: Output Image Digest and Tags
+        run: |
+          echo "Image Digest: ${{ steps.publish.outputs.image-digest }}"
+          echo "Image Tags: ${{ steps.publish.outputs.image-tags }}"
+          echo "test: ${{ secrets.SOME_SECRET }}"
+
+  deploy:
+    environment: prod
+    needs:
+      - repository
+      - publish-service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: test
+        run: |
