@@ -135,12 +135,13 @@ jobs:
           )
           RULE_ID=$(echo $EXISTING_RULES | jq -r ".[] | select(.name==\"$RULE_NAME\") | .id")
           REQUEST_METHOD=POST
-          
           if [ ! -z "$RULE_ID" ]; then
             echo "Rule already exist with name: ${RULE_NAME}, updating: ${RULE_ID}"
             REQUEST_METHOD=PUT
+            RULE_ID="/${RULE_ID}"
           else
             echo "Rule needs to be created for: ${RULE_NAME}, creating"
+            REQUEST_METHOD=POST
             RULE_ID=""
           fi
           
@@ -195,5 +196,5 @@ jobs:
           echo "${PROTECTION_RULE}" | gh api \
             --method ${REQUEST_METHOD} \
             -H "Accept: application/vnd.github+json" \
-            repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/rulesets/${RULE_ID} \
+            repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/rulesets${RULE_ID} \
             --input -
