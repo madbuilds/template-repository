@@ -90,7 +90,7 @@ jobs:
           gh api --method PUT \
             -H "Accept: application/vnd.github.v3+json" \
             repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/environments/${ENVIRONMENT_NAME} \
-            -F "wait_timer=10" -f "reviewers[][type]=Team" -F "reviewers[][id]=5"
+            -F "wait_timer=10"
           echo ""
           echo "${ENVIRONMENT_NAME}: set secrets (SSH)"
           gh secret set MADBUILDS_SSH_PRIVATE_HOST  --env ${ENVIRONMENT_NAME} --body ${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_HOST }}  --repo https://github.com/${{ env.OWNER_NAME }}/${{ matrix.project }}
