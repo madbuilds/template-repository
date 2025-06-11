@@ -48,6 +48,9 @@ inputs:
     default: '10'
 
 outputs:
+  image-name:
+    description: 'Provides final name of the image created'
+    value: ${{ steps.variables.outputs.image-name }}
   image-digest:
     description: 'Digest of the pushed Docker image'
     value: ${{ steps.build-and-push.outputs.digest }}
