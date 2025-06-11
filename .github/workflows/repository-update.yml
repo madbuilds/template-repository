@@ -179,8 +179,8 @@ jobs:
               { "type": "non_fast_forward" },
             ]
           }'
-          gh api \
+          echo "${PROTECTION_RULE}" | gh api \
             --method ${REQUEST_METHOD} \
             -H "Accept: application/vnd.github+json" \
             repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/rulesets/${RULE_ID} \
-            -d "${PROTECTION_RULE}"
+            --input -
