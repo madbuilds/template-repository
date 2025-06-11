@@ -151,8 +151,8 @@ jobs:
             "bypass_actors": [
               {
                 "actor_id": 1,
-                "actor_type": "Repository",
-                "bypass_mode": "always"
+                "actor_type": "RepositoryRole",
+                "bypass_mode": "pull_request"
               }
             ],
             "conditions": {
