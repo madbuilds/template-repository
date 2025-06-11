@@ -37,5 +37,5 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
-      - name: build deploy
+      - name: Build and Publish
         uses: ./.github/actions/publish/release/library
