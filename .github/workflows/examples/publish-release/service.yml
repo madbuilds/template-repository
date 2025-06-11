@@ -16,6 +16,7 @@ jobs:
     outputs:
       type: ${{ steps.validate.outputs.type }}
       language: ${{ steps.validate.outputs.language }}
+      environment: ${{ steps.validate.outputs.environment }}
     env:
       REPOSITORY_TYPE:     $(jq -r '.repository.custom_properties.type     | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
       REPOSITORY_LANGUAGE: $(jq -r '.repository.custom_properties.language | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
@@ -27,6 +28,7 @@ jobs:
           echo "repository language: ${{ env.REPOSITORY_LANGUAGE }}"
           echo "type=${{ env.REPOSITORY_TYPE }}" >> $GITHUB_OUTPUT
           echo "language=${{ env.REPOSITORY_LANGUAGE }}" >> $GITHUB_OUTPUT
+          echo "environment=PRODUCTION" >> $GITHUB_OUTPUT
 
   publish-service:
     needs: repository
@@ -51,13 +53,15 @@ jobs:
           echo "test: ${{ secrets.SOME_SECRET }}"
 
   deploy:
-    environment: prod
+    environment: ${{ needs.repository.outputs.environment }}
     needs:
       - repository
       - publish-service
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: test
+      - name: Output
+        id: output
         run: |
+          echo "test: ${{ secrets.SOME_ENV_SECRET }}"
+          echo "tags: ${{ needs.build-and-publish.outputs.tags }}"
+          echo "digest: ${{ needs.build-and-publish.outputs.digest }}"

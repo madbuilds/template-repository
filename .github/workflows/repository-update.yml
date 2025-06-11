@@ -119,3 +119,97 @@ jobs:
             echo "INITIALIZED: Workflow '$WORKFLOW_NAME' does not exist"
             echo "INITIALIZED: Repository already been initialized"
           fi
+
+      - name: master branch protection
+        env:
+          GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
+        run: |
+          BRANCH_NAME="master"
+          RULE_NAME="[RULE] ${BRANCH_NAME}"
+          
+          echo "Check if rule exist... ${RULE_NAME}"
+          EXISTING_RULES=$(gh api \
+            -H "Accept: application/vnd.github.v3+json" \
+            repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/rulesets \
+          )
+          RULE_ID=$(echo $EXISTING_RULES | jq -r ".[] | select(.name==\"$RULE_NAME\") | .id")
+          REQUEST_METHOD=POST
+          
+          if [ ! -z "$RULE_ID" ]; then
+            echo "Rule already exist with name: ${RULE_NAME}, updating: ${RULE_ID}"
+            REQUEST_METHOD=PUT
+          else
+            echo "Rule needs to be created for: ${RULE_NAME}, creating"
+            RULE_ID=""
+          fi
+          
+          PROTECTION_RULE_PULL_REQUEST=$(cat <<-'EOF'
+          {
+            "type": "pull_request",
+            "parameters": {
+              "dismiss_stale_reviews": true,
+              "required_approving_review_count": 1,
+              "require_last_push_approval": true,
+              "require_code_owner_review": false,
+              "bypass_restrictions": {
+                "users": [],
+                "teams": [],
+                "apps": []
+              }
+            }
+          }
+          EOF
+          )
+          PROTECTION_RULE_DELETION=$(cat <<-'EOF'
+          {
+            "type": "deletion",
+            "parameters": {}
+          }
+          EOF
+          )
+          PROTECTION_RULE_STATUS_CHECKS=$(cat <<-'EOF'
+          {
+            "type": "required_status_checks",
+            "parameters": {
+              "strict_required_status_checks_policy": true,
+              "required_status_checks": ["build"]
+            }
+          }
+          EOF
+          )
+          PROTECTION_RULE_SIGNATURE=$(cat <<-'EOF'
+          {
+            "type": "required_signatures",
+            "parameters": {}
+          }
+          EOF
+          )
+          PROTECTION_RULE_NO_FAST_FORWARD=$(cat <<-'EOF'
+          {
+            "type": "non_fast_forward",
+            "parameters": {}
+          }
+          EOF
+          )
+          PROTECTION_RULE_MERGE_QUEUE=$(cat <<-'EOF'
+          {
+            "type": "update",
+            "parameters": {
+              "update_allows_fetch_and_merge": true
+            }
+          }
+          EOF
+          )
+    
+          gh api --method ${REQUEST_METHOD} \
+            -H "Accept: application/vnd.github.v3+json" \
+            repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/rulesets/${RULE_ID} \
+            -f name="$RULE_NAME" \
+            -f target="branch" \
+            -f enforcement="active" \
+            -f conditions[ref_name][include][patterns][]="refs/heads/${BRANCH_NAME}" \
+            -f conditions[ref_name][exclude][patterns]=[] \
+            -f rules[]="${PROTECTION_RULE_PULL_REQUEST}" \
+            -f rules[]="${PROTECTION_RULE_DELETION}" \
+            -f rules[]="${PROTECTION_RULE_SIGNATURE}" \
+            -f rules[]="${PROTECTION_RULE_NO_FAST_FORWARD}"
