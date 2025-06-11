@@ -148,8 +148,9 @@ jobs:
           # bypass_actors maintain -> 2
           # bypass_actors write -> 4
           # bypass_actors admin -> 5
-          PROTECTION_RULE='{
-            "name": "$RULE_NAME",
+          PROTECTION_RULE="$(cat <<EOF
+          {
+            "name": "${RULE_NAME}",
             "target": "branch",
             "enforcement": "active",
             "bypass_actors": [
@@ -187,7 +188,9 @@ jobs:
               },
               { "type": "non_fast_forward" }
             ]
-          }'
+          }
+          EOF
+          )"
           echo "${PROTECTION_RULE}" | gh api \
             --method ${REQUEST_METHOD} \
             -H "Accept: application/vnd.github+json" \
