@@ -201,19 +201,51 @@ jobs:
           EOF
           )
     
-          gh api --method ${REQUEST_METHOD} \
-            -H "Accept: application/vnd.github.v3+json" \
-            repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/rulesets/${RULE_ID} \
-            -f name="$RULE_NAME" \
-            -f target="branch" \
-            -f enforcement="active" \
-            -f bypass_actors='[{"actor_id":1,"actor_type":"Repository","bypass_mode":"always"}]' \
-            -f conditions='{
+          echo '{
+            "name": "$RULE_NAME",
+            "target": "branch",
+            "enforcement": "active",
+            "bypass_actors": [
+              {
+                "actor_id": 1,
+                "actor_type": "Repository",
+                "bypass_mode": "always"
+              }
+            ],
+            "conditions": {
               "ref_name": {
                 "include": ["~DEFAULT_BRANCH"],
                 "exclude": []
               }
-            }' \
+            },
+            "rules": {
+              "creation": false,
+              "update": true,
+              "deletion": true,
+              "required_linear_history": false,
+              "required_signatures": true,
+              "required_status_checks": null,
+              "required_pull_request": {
+                "required_approving_review_count": 1,
+                "dismiss_stale_reviews": true,
+                "require_code_owner_review": false,
+                "require_last_push_approval": true,
+                "required_review_thread_resolution": false
+              },
+              "merge_queue": null,
+              "non_fast_forward": true,
+              "pull_request": {
+                "dismiss_stale_reviews": true,
+                "require_code_owner_review": false,
+                "required_approving_review_count": 1,
+                "required_review_thread_resolution": false,
+                "require_last_push_approval": true
+              }
+            }
+          }' | gh api --method ${REQUEST_METHOD} \
+            -H "Accept: application/vnd.github.v3+json" \
+            repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/rulesets/${RULE_ID} \
+            --input -
           
           #  -f conditions[ref_name][include][patterns][]="refs/heads/${BRANCH_NAME}" \
           #  -f conditions[ref_name][exclude][patterns]=[] \
