@@ -16,7 +16,7 @@ env:
   GITHUB_ACTIONS_NAME: github-actions[bot]
 
 jobs:
-  repository:
+  repository: # SERVICE LEVEL - CHECK AND SHARE VARIABLES
     if: ${{ !startsWith(github.repository, 'madbuilds/template-') }}
     runs-on: ubuntu-latest
     outputs:
@@ -59,6 +59,10 @@ jobs:
       packages: write # Crucial for pushing package
       attestations: write # Optional, for supply-chain security
       id-token: write # Optional, for OIDC
+    outputs:
+      image-name: ${{ steps.publish.outputs.image-name }}
+      image-tags: ${{ steps.publish.outputs.image-tags }}
+      image-digest: ${{ steps.publish.outputs.image-digest }}
     steps:
       - uses: actions/checkout@v4
 
@@ -68,9 +72,9 @@ jobs:
 
       - name: Output Image Digest and Tags
         run: |
+          echo "Image Name: ${{ steps.publish.outputs.image-name }}"
           echo "Image Digest: ${{ steps.publish.outputs.image-digest }}"
           echo "Image Tags: ${{ steps.publish.outputs.image-tags }}"
-          echo "test: ${{ secrets.SOME_SECRET }}"
 
   deploy:
     environment: ${{ needs.repository.outputs.environment }}
@@ -79,9 +83,23 @@ jobs:
       - publish-service
     runs-on: ubuntu-latest
     steps:
-      - name: Output
-        id: output
-        run: |
-          echo "test: ${{ secrets.SOME_ENV_SECRET }}"
-          echo "tags: ${{ needs.build-and-publish.outputs.tags }}"
-          echo "digest: ${{ needs.build-and-publish.outputs.digest }}"
+      - uses: actions/checkout@v4
+      - name: deploy
+        id: deploy
+        uses: ./.github/actions/deploy/compose/traefik
+        with:
+          ssh_private_key:  ${{ secrets.MADBUILDS_SSH_PRIVATE_KEY }}
+          ssh_private_host: ${{ secrets.MADBUILDS_SSH_PRIVATE_HOST }}
+          ssh_private_port: ${{ secrets.MADBUILDS_SSH_PRIVATE_PORT }}
+          ssh_private_user: ${{ secrets.MADBUILDS_SSH_PRIVATE_USER }}
+          delete_before_deploy:
+            ./docs
+            ./test
+          compose_file: './docker-compose.remote.yml'
+          domain: 'devim.duckdns.org'
+          target:
+            dummy-${{ github.event.repository.name }}:nginx:80
+          env:
+            SERVICE_IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/${{ needs.publish-service.outputs.image-name }}
+            SERVICE_IMAGE_DIGEST=${{ needs.publish-service.outputs.image-digest }}
+            FOO=BAR

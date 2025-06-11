@@ -127,23 +127,66 @@ runs:
       name: create ssh configuration
       shell: bash
       env:
-        SSH_RSA_ID: ~/.ssh/id_rsa
+        SSH_DIR: /home/runner/.ssh
+        SSH_RSA_ID: /home/runner/.ssh/id_rsa
       run: |
         echo ""
         echo "========== SSH CONNECTION KEYS =========="
         echo ""
         
-        mkdir -p ~/.ssh
-        echo "${{ inputs.ssh_private_key }}" > ${{ env.SSH_RSA_ID }}
-        chmod 600 ${{ env.SSH_RSA_ID }}
-        cat <<EOF >> ~/.ssh/config
+        echo "Starting SSH configuration..."
+        echo "Checking variables..."
+        if [ -z "${{ inputs.ssh_private_key }}" ]; then echo "ERROR: ssh_private_key is empty"; exit 1; fi
+        if [ -z "${{ inputs.ssh_private_host }}" ]; then echo "ERROR: ssh_private_host is empty"; exit 1; fi
+        if [ -z "${{ inputs.ssh_private_user }}" ]; then echo "ERROR: ssh_private_user is empty"; exit 1; fi
+        if [ -z "${{ inputs.ssh_private_port }}" ]; then echo "ERROR: ssh_private_port is empty"; exit 1; fi
+        if [ -z "${{ env.SSH_RSA_ID }}" ]; then echo "ERROR: SSH_RSA_ID is empty"; exit 1; fi
+        
+        
+        echo "Creating .ssh directory..."
+        mkdir -p "${SSH_DIR}"
+        
+        echo "Setting up private key..."
+        if [ -f "${{ env.SSH_RSA_ID }}" ]; then
+          rm "${{ env.SSH_RSA_ID }}"
+        fi
+        echo "Writing up private key..."
+        echo "${{ inputs.ssh_private_key }}" | tr -d '\r' > "${{ env.SSH_RSA_ID }}"
+        
+        echo "Setting permissions..."
+        chmod 700 "${SSH_DIR}"
+        chmod 600 "${{ env.SSH_RSA_ID }}"
+        
+        echo "Creating SSH config..."
+
+        cat <<EOF >> "${SSH_DIR}/config"
         Host sshserver
             HostName ${{ inputs.ssh_private_host }}
             User ${{ inputs.ssh_private_user }}
             Port ${{ inputs.ssh_private_port }}
             IdentityFile ${{ env.SSH_RSA_ID }}
+            StrictHostKeyChecking accept-new
         EOF
-        ssh-keyscan -H ${{ inputs.ssh_private_host }} >> ~/.ssh/known_hosts
+        
+        echo "Check host is available..."
+        # Попробуем сначала проверить доступность хоста
+        nc -zv ${{ inputs.ssh_private_host }} ${{ inputs.ssh_private_port }} 2>&1 || {
+          echo "ERROR: Could not connect to host ${{ inputs.ssh_private_host }} on port ${{ inputs.ssh_private_port }}"
+          exit 1
+        }
+
+        echo "Running ssh-keyscan..."
+        ssh-keyscan -v -p ${{ inputs.ssh_private_port }} -H "${{ inputs.ssh_private_host }}" >> "${SSH_DIR}/known_hosts" 2>&1 || {
+          echo "ssh-keyscan failed with status $?"
+          echo "Content of known_hosts:"
+          cat "${SSH_DIR}/known_hosts"
+          exit 1
+        }
+        
+        echo "Testing SSH config..."
+        ls -la "${SSH_DIR}"
+        cat "${SSH_DIR}/config"
+        echo "SSH configuration completed"
 
     - id: setup
       name: generate names based on input values
@@ -212,7 +255,7 @@ runs:
         echo ""
         
         TARGETS=$(echo "${{ inputs.target }}" | tr -s '[:space:]' '\n')
-        INPUT_FILE="docker-compose.yml"
+        INPUT_FILE=${{inputs.compose_file}}
         OUTPUT_FILE="docker-compose.override.yml"
         
         in_services_block=false
@@ -292,6 +335,19 @@ runs:
         echo ""
         echo "========== COPY REPOSITORY TO REMOTE =========="
         echo ""
+        
+        if [ -d "./.git" ] || [ -f "./.git" ]; then
+          echo "Deleting folder ./.git"
+          rm -rf "./.git"
+        else
+          echo "Skipping ./.git (not found)"
+        fi
+        if [ -d "./.github" ] || [ -f "./.github" ]; then
+          echo "Deleting folder ./.github"
+          rm -rf "./.github"
+        else
+          echo "Skipping ./.github (not found)"
+        fi
         
         echo "${{ inputs.delete_before_deploy }}" | tr -s '[:space:]' '\n' | while read -r folder; do
           # Skip empty lines

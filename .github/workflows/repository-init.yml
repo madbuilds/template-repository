@@ -61,7 +61,15 @@ jobs:
             cp -rfv "$TEMPLATE_PATH"/* ./
             shopt -u dotglob
           else
-            echo "Template path $TEMPLATE_PATH does not exist. skipping..."
+            TEMPLATE_PATH="./template/${{ env.REPOSITORY_TYPE }}/default"
+            if [ -d "$TEMPLATE_PATH" ]; then
+              echo "Copying file from $TEMPLATE_PATH"
+              shopt -s dotglob
+              cp -rfv "$TEMPLATE_PATH"/* ./
+              shopt -u dotglob
+            else
+              echo "Template path $TEMPLATE_PATH does not exist. skipping..."
+            fi
           fi
           
           echo "Copy: publish-release/${{ env.REPOSITORY_TYPE }}.yml > publish-release.yml"
