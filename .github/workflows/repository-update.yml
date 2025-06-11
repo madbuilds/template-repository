@@ -178,9 +178,10 @@ jobs:
               },
               { "type": "non_fast_forward" },
             ]
-          }'
-          echo "${PROTECTION_RULE}" | gh api \
-            --method ${REQUEST_METHOD} \
+          }'          
+          curl -L \
+            -X ${REQUEST_METHOD} \
             -H "Accept: application/vnd.github+json" \
-            repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/rulesets/${RULE_ID} \
-            --input -
+            -H "Authorization: Bearer ${{ env.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/rulesets/${RULE_ID} \
+            -d "${PROTECTION_RULE}"
