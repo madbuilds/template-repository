@@ -207,9 +207,17 @@ jobs:
             -f name="$RULE_NAME" \
             -f target="branch" \
             -f enforcement="active" \
-            -f conditions[ref_name][include][patterns][]="refs/heads/${BRANCH_NAME}" \
-            -f conditions[ref_name][exclude][patterns]=[] \
-            -f rules[]="${PROTECTION_RULE_PULL_REQUEST}" \
-            -f rules[]="${PROTECTION_RULE_DELETION}" \
-            -f rules[]="${PROTECTION_RULE_SIGNATURE}" \
-            -f rules[]="${PROTECTION_RULE_NO_FAST_FORWARD}"
+            -f bypass_actors='[{"actor_id":1,"actor_type":"Repository","bypass_mode":"always"}]' \
+            -f conditions='{
+              "ref_name": {
+                "include": ["~DEFAULT_BRANCH"],
+                "exclude": []
+              }
+            }' \
+          
+          #  -f conditions[ref_name][include][patterns][]="refs/heads/${BRANCH_NAME}" \
+          #  -f conditions[ref_name][exclude][patterns]=[] \
+          #  -f rules[]="${PROTECTION_RULE_PULL_REQUEST}" \
+          #  -f rules[]="${PROTECTION_RULE_DELETION}" \
+          #  -f rules[]="${PROTECTION_RULE_SIGNATURE}" \
+          #  -f rules[]="${PROTECTION_RULE_NO_FAST_FORWARD}"
