@@ -23,6 +23,7 @@ jobs:
       run: ${{ steps.is_required.outputs.run }}
       type: ${{ steps.validate.outputs.type }}
       language: ${{ steps.validate.outputs.language }}
+      environment: ${{ steps.validate.outputs.environment }}
     steps:
       - uses: actions/checkout@v4
       - name: is publish required
@@ -47,6 +48,7 @@ jobs:
           echo "repository language: ${{ env.REPOSITORY_LANGUAGE }}"
           echo "type=${{ env.REPOSITORY_TYPE }}" >> $GITHUB_OUTPUT
           echo "language=${{ env.REPOSITORY_LANGUAGE }}" >> $GITHUB_OUTPUT
+          echo "environment=TEST" >> $GITHUB_OUTPUT
 
   publish-service:
     needs: repository
@@ -59,3 +61,27 @@ jobs:
       id-token: write # Optional, for OIDC
     steps:
       - uses: actions/checkout@v4
+
+      - name: Build and Publish Docker Image to GHCR
+        id: publish
+        uses: ./.github/actions/publish/snapshot/docker
+
+      - name: Output Image Digest and Tags
+        run: |
+          echo "Image Digest: ${{ steps.publish.outputs.image-digest }}"
+          echo "Image Tags: ${{ steps.publish.outputs.image-tags }}"
+          echo "test: ${{ secrets.SOME_SECRET }}"
+
+  deploy:
+    environment: ${{ needs.repository.outputs.environment }}
+    needs:
+      - repository
+      - publish-service
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output
+        id: output
+        run: |
+          echo "test: ${{ secrets.SOME_ENV_SECRET }}"
+          echo "tags: ${{ needs.build-and-publish.outputs.tags }}"
+          echo "digest: ${{ needs.build-and-publish.outputs.digest }}"
