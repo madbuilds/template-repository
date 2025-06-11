@@ -144,6 +144,7 @@ jobs:
           fi
           
           # API CALL: https://docs.github.com/ru/rest/repos/rules?#create-a-repository-ruleset
+          # bypass_actors org_admin -> 1
           # bypass_actors maintain -> 2
           # bypass_actors write -> 4
           # bypass_actors admin -> 5
@@ -152,6 +153,11 @@ jobs:
             "target": "branch",
             "enforcement": "active",
             "bypass_actors": [
+              {
+                "actor_id": 1,
+                "actor_type": "OrganizationAdmin",
+                "bypass_mode": "pull_request"
+              },
               {
                 "actor_id": 5,
                 "actor_type": "RepositoryRole",
