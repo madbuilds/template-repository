@@ -1,3 +1,6 @@
+# FILE: ./.github/actions/publish/snapshot/docker/action.yml
+# DESCRIPTION: same as release/docker/action.yml
+
 name: 'PUBLISH Docker Image to GHCR.io'
 description: 'Build and Push docker image to GitHub Container Registry (GHCR.io)'
 

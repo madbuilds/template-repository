@@ -56,15 +56,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # Crucial for pushing package
+      packages: write     # Crucial for pushing package
       attestations: write # Optional, for supply-chain security
-      id-token: write # Optional, for OIDC
+      id-token: write     # Optional, for OIDC
     outputs:
       image-name: ${{ steps.publish.outputs.image-name }}
       image-tags: ${{ steps.publish.outputs.image-tags }}
       image-digest: ${{ steps.publish.outputs.image-digest }}
     steps:
       - uses: actions/checkout@v4
+
+      # compile the project
+      # - name: Compile Project
+      #   id: compile
+      #   run: something...
 
       - name: Build and Publish Docker Image to GHCR
         id: publish

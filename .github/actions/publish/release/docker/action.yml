@@ -1,3 +1,12 @@
+# FILE: ./.github/actions/publish/release/docker/action.yml
+# DESCRIPTION: allows publishing docker images to GitHub Container Registry (GHCR.IO)
+#              build docker image using Dockerfile provided
+#              TAG it based on build running from
+#                * if build is Release+Published - takes a release version and use it as tag
+#                * if build is master-branch-based - uses 'master-*' as prefix for name
+#                * if build is any dev-branch-based - uses 'dev-{short-branch-name}-*' as prefix for name
+#              keeps only last {NUMBER} of release/master/dev images in GHCR which is older than {DAYS}
+
 name: 'PUBLISH Docker Image to GHCR.io'
 description: 'Build and Push docker image to GitHub Container Registry (GHCR.io)'
 
