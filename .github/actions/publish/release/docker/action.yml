@@ -159,7 +159,7 @@ runs:
       shell: bash
       run: |
         if [[ "${{ github.event_name }}" == "release" && "${{ github.event.action }}" == "published" ]]; then
-          RELEVANT_TAG=${{ steps.meta.outputs.version }}@${{ steps.build-and-push.outputs.digest }}
+          RELEVANT_TAG=${{ steps.meta.outputs.version }}
         fi
         if [[ "${{ github.event_name }}" != "release" && "${{ github.ref_name }}" == "${{ github.event.repository.default_branch }}" ]]; then
           RELEVANT_TAG=${{ github.event.repository.default_branch }}-${{ steps.variables.outputs.sha }}.${{github.run_number}}
@@ -172,6 +172,7 @@ runs:
         echo "## 📃 Docker Image summary : ${{ steps.variables.outputs.image-name }}" >> $GITHUB_STEP_SUMMARY
         echo "- 🏷️ tag: \`ghcr.io/${{ github.repository_owner }}/${{ steps.variables.outputs.image-name }}:${RELEVANT_TAG}\`" >> $GITHUB_STEP_SUMMARY
         echo "<details><summary><strong>Available tags</strong></summary><pre lang="text"><code>" >> $GITHUB_STEP_SUMMARY
+        echo "digest: @${{ steps.build-and-push.outputs.digest }}" >> $GITHUB_STEP_SUMMARY
         echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
         echo "</code></pre></details>" >> $GITHUB_STEP_SUMMARY
 
