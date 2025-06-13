@@ -1,4 +1,4 @@
-# FILE: ./.github/actions/deploy/compose/action.yml
+# FILE: ./.github/actions/deploy/compose/traefik/action.yml
 # DESCRIPTION: allows deploying applications with a docker-compose.yml file
 #              generates: docker-compose.deploy.yml with commented ports for all services
 #                         as it runs under reverse-proxy we do not need to expose ports (to access by domain only)
@@ -172,7 +172,6 @@ runs:
         EOF
         
         echo "Check host is available..."
-        # Попробуем сначала проверить доступность хоста
         nc -zv ${{ inputs.ssh_private_host }} ${{ inputs.ssh_private_port }} 2>&1 || {
           echo "ERROR: Could not connect to host ${{ inputs.ssh_private_host }} on port ${{ inputs.ssh_private_port }}"
           exit 1
