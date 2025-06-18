@@ -1,5 +1,5 @@
-﻿name: "🚀 Feature Task Group"
-description: "If something needs to be done"
+﻿name: "🚀 Feature Task"
+description: "specific feature to be implemented"
 title: "🚀 [FEATURE] - "
 labels: [
   "feature"
