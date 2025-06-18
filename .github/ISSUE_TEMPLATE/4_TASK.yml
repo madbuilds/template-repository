@@ -1,5 +1,5 @@
-﻿name: "🪧 Task to complete"
-description: "A specific action needed to complete a work/feature"
+﻿name: "🪧 Task"
+description: "specific action needed to complete a work/feature"
 title: "🪧 [TASK] - "
 labels: [
   "enhancement"
