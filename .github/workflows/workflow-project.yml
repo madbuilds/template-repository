@@ -1,0 +1,37 @@
+name: update board assignment for issues and PRs
+
+on:
+  issues:
+    types:
+      - opened
+  pull_request:
+    types:
+      - opened
+
+env:
+  SYNC_APP_ID:        ${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
+  SYNC_CLIENT_ID:     ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
+  SYNC_CLIENT_SECRET: ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_SECRET }}
+  SYNC_PRIVATE_KEY:   ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
+
+jobs:
+  board-update:
+    permissions:
+      issues: read
+      pull-requests: read
+      repository-projects: write
+
+    name: add to board
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auth # https://github.com/tibdex/github-app-token
+        id: auth
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id:      ${{ env.SYNC_APP_ID }}
+          private_key: ${{ env.SYNC_PRIVATE_KEY }}
+
+      - uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/orgs/madbuilds/projects/7
+          github-token: ${{ steps.auth.outputs.token }}
