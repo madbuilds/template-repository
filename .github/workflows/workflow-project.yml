@@ -1,4 +1,4 @@
-name: update board assignment for issues and PRs
+name: assign to Board
 
 on:
   issues:
