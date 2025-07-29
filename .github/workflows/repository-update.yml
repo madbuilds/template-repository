@@ -9,6 +9,7 @@ on:
 env:
   OWNER_NAME: "madbuilds"
   REPOSITORIES: >
+    \"telegram-donation-ui\",
     \"app-logging\",
     \"some-service\",
     \"sbot\" \
