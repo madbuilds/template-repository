@@ -10,7 +10,7 @@ inputs:
     description: 'username used for automated commits which should not trigger actions'
     required: false
     default: "github-actions[bot]"
-  type:
+  type: #TODO: remove in future
     description: 'execution type (snapshot / release)'
     required: false
     default: "release"
