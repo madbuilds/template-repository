@@ -67,7 +67,8 @@ runs:
       uses: actions/checkout@v4
 
     - id: environment
-      env: ${{ inputs.GITHUB_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       shell: bash
       run: |
         if [[ -n "${{ inputs.environment }}" ]]; then
@@ -104,7 +105,8 @@ runs:
         fi
 
     - id: variables
-      env: ${{ inputs.GITHUB_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       shell: bash
       run: |
         env_args=()
@@ -132,7 +134,8 @@ runs:
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
 
     - id: secrets
-      env: ${{ inputs.GITHUB_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       shell: bash
       run: |
         env_args=()
