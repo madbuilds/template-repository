@@ -126,7 +126,7 @@ runs:
               exit 1
             fi
         
-            IFS='=' read -r key value <<< "\$token"
+            IFS='=' read -r key value <<< "\$variable"
             echo "[template] - variables: updating: $repository:$key"
             gh variable set "$key" "${env_args[@]}" --body "$value" --repo "https://github.com/${{ inputs.owner }}/$repository"
         
@@ -155,7 +155,7 @@ runs:
               exit 1
             fi
         
-            IFS='=' read -r key value <<< "\$token"
+            IFS='=' read -r key value <<< "\$secret"
             echo "[template] - secrets: updating: $repository:$key"
             gh secret set "$key" "${env_args[@]}" --body "$value" --repo "https://github.com/${{ inputs.owner }}/$repository"
         
