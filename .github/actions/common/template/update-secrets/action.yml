@@ -78,7 +78,7 @@ runs:
             [[ -z "$repository" ]] && continue
             
             # CREATE - DEPLOYMENT ENV (IF NOT EXIST)
-            if gh api repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/environments/${ENVIRONMENT_NAME} --jq '.name' >/dev/null 2>&1; then
+            if gh api repos/${{ inputs.owner }}/$repository/environments/${{ inputs.environment }} --jq '.name' >/dev/null 2>&1; then
               echo "[template] - environment: ENVIRONMENT exists: $repository:${{ inputs.environment }}"
             else
               echo "[template] - environment: create ENVIRONMENT: $repository:${{ inputs.environment }}"
@@ -93,8 +93,7 @@ runs:
             gh api --method PUT \
               -H "Accept: application/vnd.github.v3+json" \
               repos/${{ inputs.owner }}/$repository/environments/${{ inputs.environment }} \
-              -f "reviewers[][type]=User" \ 
-              -F "reviewers[][id]=11288889"
+              -f "reviewers[][type]=User" -F "reviewers[][id]=11288889"
         
             #gh api --method PUT \
             #  -H "Accept: application/vnd.github.v3+json" \
@@ -135,8 +134,6 @@ runs:
   
             echo "[template] - variables: updating: $repository:$key"
             gh variable set "$key" "${env_args[@]}" --body "$value" --repo "https://github.com/${{ inputs.owner }}/$repository"
-        
-            printf '%s' "${{ inputs.value }}" | gh variable set "${{ inputs.key }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
         
           done < <(echo "${{ inputs.variables }}" | tr -s '\n')
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
