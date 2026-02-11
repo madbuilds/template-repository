@@ -136,7 +136,7 @@ runs:
             echo "[template] - variables: updating: $repository:$key"
             gh variable set "$key" "${env_args[@]}" --body "$value" --repo "https://github.com/${{ inputs.owner }}/$repository"
         
-            printf '%s' "${{ inputs.value }}" | gh secret set "${{ inputs.key }}" "${env_args[@]}" --body-file - --repo "https://github.com/${{ inputs.owner }}/$repository"
+            printf '%s' "${{ inputs.value }}" | gh variable set "${{ inputs.key }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
         
           done < <(echo "${{ inputs.variables }}" | tr -s '\n')
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
@@ -171,23 +171,23 @@ runs:
         
           if [[ -n "${{ inputs.key }}" && -n "${{ inputs.value }}" ]]; then
             echo "[template] - secrets: updating: $repository:${{ inputs.key }}"
-            printf '%s' "${{ inputs.value }}" | gh secret set "${{ inputs.key }}" "${env_args[@]}" --body-file - --repo "https://github.com/${{ inputs.owner }}/$repository"            
+            printf '%s' "${{ inputs.value }}" | gh secret set "${{ inputs.key }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
           fi
           if [[ -n "${{ inputs.key_2 }}" && -n "${{ inputs.value_2 }}" ]]; then
             echo "[template] - secrets: updating: $repository:${{ inputs.key_2 }}"
-            printf '%s' "${{ inputs.value_2 }}" | gh secret set "${{ inputs.key_2 }}" "${env_args[@]}" --body-file - --repo "https://github.com/${{ inputs.owner }}/$repository"
+            printf '%s' "${{ inputs.value_2 }}" | gh secret set "${{ inputs.key_2 }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
           fi
           if [[ -n "${{ inputs.key_3 }}" && -n "${{ inputs.value_3 }}" ]]; then
             echo "[template] - secrets: updating: $repository:${{ inputs.key_3 }}"
-            printf '%s' "${{ inputs.value_3 }}" | gh secret set "${{ inputs.key_3 }}" "${env_args[@]}" --body-file - --repo "https://github.com/${{ inputs.owner }}/$repository"
+            printf '%s' "${{ inputs.value_3 }}" | gh secret set "${{ inputs.key_3 }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
           fi
           if [[ -n "${{ inputs.key_4 }}" && -n "${{ inputs.value_4 }}" ]]; then
             echo "[template] - secrets: updating: $repository:${{ inputs.key_4 }}"
-            printf '%s' "${{ inputs.value_4 }}" | gh secret set "${{ inputs.key_4 }}" "${env_args[@]}" --body-file - --repo "https://github.com/${{ inputs.owner }}/$repository"
+            printf '%s' "${{ inputs.value_4 }}" | gh secret set "${{ inputs.key_4 }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
           fi
           if [[ -n "${{ inputs.key_5 }}" && -n "${{ inputs.value_5 }}" ]]; then
             echo "[template] - secrets: updating: $repository:${{ inputs.key_5 }}"
-            printf '%s' "${{ inputs.value_5 }}" | gh secret set "${{ inputs.key_5 }}" "${env_args[@]}" --body-file - --repo "https://github.com/${{ inputs.owner }}/$repository"
+            printf '%s' "${{ inputs.value_5 }}" | gh secret set "${{ inputs.key_5 }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
           fi
         
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
