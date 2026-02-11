@@ -38,7 +38,7 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
           repositories: some-service
-          variables:
+          variables: |
             TEST_VAR="Set from composite action"
 
       - name: update prod secrets
@@ -47,7 +47,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
           repositories: some-service
           environment: PRODUCTION
-          secrets:
+          secrets: |
             MADBUILDS_SSH_PRIVATE_HOST=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_HOST }}
             MADBUILDS_SSH_PRIVATE_PORT=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_PORT }}
             MADBUILDS_SSH_PRIVATE_USER=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_USER }}
@@ -60,7 +60,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
           repositories: some-service
           environment: TEST
-          secrets:
+          secrets: |
             MADBUILDS_SSH_PRIVATE_HOST=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_HOST }}
             MADBUILDS_SSH_PRIVATE_PORT=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_PORT }}
             MADBUILDS_SSH_PRIVATE_USER=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_USER }}
@@ -72,7 +72,7 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
           repositories: some-service
-          secrets:
+          secrets: |
             MADBUILDS_SYNCAPP_APP_ID=${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
             MADBUILDS_SYNCAPP_CLIENT_ID=${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
             MADBUILDS_SYNCAPP_CLIENT_SECRET=${{ secrets.MADBUILDS_SYNCAPP_CLIENT_SECRET }}

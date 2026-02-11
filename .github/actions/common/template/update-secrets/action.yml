@@ -126,11 +126,17 @@ runs:
               exit 1
             fi
         
-            IFS='=' read -r key value <<< "$variable"
+            key="${variable%%=*}"
+            value="${variable#*=}"
+            # Optional: strip one pair of surrounding double-quotes
+            if [[ "$value" == \"*\" && "$value" == *\" ]]; then
+              value="${value:1:${#value}-2}"
+            fi
+  
             echo "[template] - variables: updating: $repository:$key"
             gh variable set "$key" "${env_args[@]}" --body "$value" --repo "https://github.com/${{ inputs.owner }}/$repository"
         
-          done < <(echo "${{ inputs.variables }}" | tr -s '[:space:]' '\n')
+          done < <(echo "${{ inputs.variables }}" | tr -s '\n')
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
 
     - id: secrets
