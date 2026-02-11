@@ -37,7 +37,7 @@ jobs:
         uses: ./.github/actions/common/template/update-secrets
         with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
-          repositories: some-service
+          repositories: ${{ matrix.project }}
           variables: |
             TEST_VAR="Set from composite action"
 
@@ -45,7 +45,7 @@ jobs:
         uses: ./.github/actions/common/template/update-secrets
         with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
-          repositories: some-service
+          repositories: ${{ matrix.project }}
           environment: PRODUCTION
           secrets: |
             MADBUILDS_SSH_PRIVATE_HOST=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_HOST }}
@@ -58,7 +58,7 @@ jobs:
         uses: ./.github/actions/common/template/update-secrets
         with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
-          repositories: some-service
+          repositories: ${{ matrix.project }}
           environment: TEST
           secrets: |
             MADBUILDS_SSH_PRIVATE_HOST=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_HOST }}
@@ -71,7 +71,7 @@ jobs:
         uses: ./.github/actions/common/template/update-secrets
         with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
-          repositories: some-service
+          repositories: ${{ matrix.project }}
           secrets: |
             MADBUILDS_SYNCAPP_APP_ID=${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
             MADBUILDS_SYNCAPP_CLIENT_ID=${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}

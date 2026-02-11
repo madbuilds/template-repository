@@ -151,7 +151,7 @@ runs:
         while read -r repository; do
           [[ -z "$repository" ]] && continue
           echo ""
-          echo "[template] - secrets: Updating secrets in: $repository"
+          echo "[template] - secrets: Updating secrets in: $repository ${{ inputs.environment }}"
         
           while read -r secret; do
             [[ -z "$secret" ]] && continue
