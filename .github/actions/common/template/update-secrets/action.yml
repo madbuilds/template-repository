@@ -165,7 +165,7 @@ runs:
             echo "[template] - secrets: updating: $repository:$key"
             gh secret set "$key" "${env_args[@]}" --body "$value" --repo "https://github.com/${{ inputs.owner }}/$repository"
         
-          done < <(echo "${{ inputs.secrets }}" | tr -s '[:space:]' '\n')
+          done < <(echo "${{ inputs.secrets }}" | tr -s '\n')
         
           if [[ -n "${{ inputs.key }}" && -n "${{ inputs.value }}" ]]; then
             echo "[template] - secrets: updating: $repository:${{ inputs.key }}"
