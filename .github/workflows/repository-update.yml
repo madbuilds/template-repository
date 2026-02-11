@@ -40,6 +40,8 @@ jobs:
           repositories: some-service
           variables: |
             TEST_VAR="Set from composite action"
+          key: TEST_MULTILINE
+          value: ${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_KEY }}
 
       - name: update prod secrets
         uses: ./.github/actions/common/template/update-secrets
