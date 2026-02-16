@@ -7,9 +7,12 @@ on:
   workflow_dispatch:
 
 env:
-  OWNER_NAME: "madbuilds"
   REPOSITORIES: >
-    \"some-service\" \
+    telegram-donation-ui
+    app-logging
+    pritunl
+    some-service
+    sbot
 
 jobs:
   setup:
@@ -19,7 +22,15 @@ jobs:
     steps:
       - id: matrix
         run: |
-          echo "repositories=[ ${{ env.REPOSITORIES }} ]" >> $GITHUB_OUTPUT
+          while IFS= read -r repository: do
+            [[ -z "$repository" ]] && continue
+            if [[ -z "$json" ]]; then
+              json="\"$repository\""
+            else
+              json="$json,\"$repository\""
+            fi
+          done <<< "${{ env.REPOSITORIES }}"
+          echo "repositories=[ ${json} ]" >> $GITHUB_OUTPUT
 
   update:
     needs:
