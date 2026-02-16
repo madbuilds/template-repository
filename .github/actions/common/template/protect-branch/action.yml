@@ -33,7 +33,7 @@ runs:
       run: |
         echo "[template] - init: creating ruleset name for ${{ inputs.branch }} in ${{ inputs.repositories }}"
         
-        RULENAME_PREFIX="[RULE:AUTO"
+        RULENAME_PREFIX="[RULE"
         RULENAME_SUFFIX="] ${{ inputs.branch }}"
         
         echo "rulename_prefix=${RULENAME_PREFIX}" >> $GITHUB_OUTPUT
