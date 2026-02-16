@@ -22,14 +22,14 @@ jobs:
     steps:
       - id: matrix
         run: |
-          while IFS= read -r repository; do
+          while read -r repository; do
             [[ -z "$repository" ]] && continue
             if [[ -z "$json" ]]; then
               json="\"$repository\""
             else
               json="$json,\"$repository\""
             fi
-          done <<< "${{ env.REPOSITORIES }}"
+          done < <(echo "${{ env.REPOSITORIES }}" | tr -s '[:space:]' '\n')
           echo "repositories=[ ${json} ]" >> $GITHUB_OUTPUT
 
   update:
