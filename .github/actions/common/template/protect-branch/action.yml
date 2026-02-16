@@ -54,8 +54,8 @@ runs:
           | jq -r '
               ([.[] 
                 | select(.name | startswith("${{ steps.init.outputs.rulename_prefix }}"))
-                | select(.name |   endswith("${{ steps.init.outputs.rulename_suffix }}"))
-                | select(.name | length <= length("${{ steps.init.outputs.rulename }}")) 
+                | select(.name |   endswith("${{ steps.init.outputs.rulename_suffix }}")) 
+                | select((.name | length) <= ("${{ steps.init.outputs.rulename }}" | length))
                 | .id
               ] | first) // empty
             '
