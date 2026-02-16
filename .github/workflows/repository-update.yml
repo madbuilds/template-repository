@@ -15,11 +15,11 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.matrix.outputs.project }}
+      matrix: ${{ steps.matrix.outputs.repositories }}
     steps:
       - id: matrix
         run: |
-          echo "project=[ ${{ env.REPOSITORIES }} ]" >> $GITHUB_OUTPUT
+          echo "repositories=[ ${{ env.REPOSITORIES }} ]" >> $GITHUB_OUTPUT
 
   update:
     needs:
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project: ${{ fromJSON(needs.setup.outputs.matrix) }}
+        repository: ${{ fromJSON(needs.setup.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -35,7 +35,7 @@ jobs:
         uses: ./.github/actions/common/template/update-secrets
         with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
-          repositories: ${{ matrix.project }}
+          repositories: ${{ matrix.repository }}
           variables: |
             TEST_VAR="Set from composite action"
 
@@ -43,7 +43,7 @@ jobs:
         uses: ./.github/actions/common/template/update-secrets
         with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
-          repositories: ${{ matrix.project }}
+          repositories: ${{ matrix.repository }}
           environment: PRODUCTION
           secrets: |
             MADBUILDS_SSH_PRIVATE_HOST=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_HOST }}
@@ -56,7 +56,7 @@ jobs:
         uses: ./.github/actions/common/template/update-secrets
         with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
-          repositories: ${{ matrix.project }}
+          repositories: ${{ matrix.repository }}
           environment: TEST
           secrets: |
             MADBUILDS_SSH_PRIVATE_HOST=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_HOST }}
@@ -69,7 +69,7 @@ jobs:
         uses: ./.github/actions/common/template/update-secrets
         with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
-          repositories: ${{ matrix.project }}
+          repositories: ${{ matrix.repository }}
           secrets: |
             MADBUILDS_SYNCAPP_APP_ID=${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
             MADBUILDS_SYNCAPP_CLIENT_ID=${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
@@ -81,88 +81,12 @@ jobs:
         uses: ./.github/actions/common/template/execute-workflow
         with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
-          repositories: ${{ matrix.project }}
+          repositories: ${{ matrix.repository }}
           workflow: repository-init.yml
 
-      - name: master branch protection
-        env:
+      - name: update branch protection
+        uses: ./.github/actions/common/template/protect-branch
+        with:
           GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
-        run: |
-          BRANCH_NAME="master"
-          RULE_NAME="[RULE] ${BRANCH_NAME}"
-          
-          echo "Check if rule exist... ${RULE_NAME}"
-          EXISTING_RULES=$(gh api \
-            -H "Accept: application/vnd.github.v3+json" \
-            repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/rulesets \
-          )
-          RULE_ID=$(echo $EXISTING_RULES | jq -r ".[] | select(.name==\"$RULE_NAME\") | .id")
-          REQUEST_METHOD=POST
-          if [ ! -z "$RULE_ID" ]; then
-            echo "Rule already exist with name: ${RULE_NAME}, updating: ${RULE_ID}"
-            REQUEST_METHOD=PUT
-            RULE_ID="/${RULE_ID}"
-          else
-            echo "Rule needs to be created for: ${RULE_NAME}, creating"
-            REQUEST_METHOD=POST
-            RULE_ID=""
-          fi
-          
-          # API CALL: https://docs.github.com/ru/rest/repos/rules?#create-a-repository-ruleset
-          # bypass_actors org_admin -> 1
-          # bypass_actors maintain -> 2
-          # bypass_actors write -> 4
-          # bypass_actors admin -> 5
-          PROTECTION_RULE="$(cat <<EOF
-          {
-            "name": "${RULE_NAME}",
-            "target": "branch",
-            "enforcement": "active",
-            "bypass_actors": [
-              {
-                "actor_id": 1,
-                "actor_type": "OrganizationAdmin",
-                "bypass_mode": "pull_request"
-              },
-              {
-                "actor_id": 5,
-                "actor_type": "RepositoryRole",
-                "bypass_mode": "pull_request"
-              },
-              {
-                "actor_id": 1107463,
-                "actor_type": "Integration",
-                "bypass_mode": "always"
-              }
-            ],
-            "conditions": {
-              "ref_name": {
-                "include": ["~DEFAULT_BRANCH"],
-                "exclude": []
-              }
-            },
-            "rules": [
-              { "type": "deletion" },
-              { "type": "required_signatures" },
-              {
-                "type": "pull_request",
-                "parameters": {
-                  "required_approving_review_count": 1,
-                  "dismiss_stale_reviews_on_push": true,
-                  "require_code_owner_review": false,
-                  "require_last_push_approval": false,
-                  "required_review_thread_resolution": true,
-                  "automatic_copilot_code_review_enabled": false,
-                  "allowed_merge_methods": [ "merge", "squash" ]
-                }
-              },
-              { "type": "non_fast_forward" }
-            ]
-          }
-          EOF
-          )"
-          echo "${PROTECTION_RULE}" | gh api \
-            --method ${REQUEST_METHOD} \
-            -H "Accept: application/vnd.github+json" \
-            repos/${{ env.OWNER_NAME }}/${{ matrix.project }}/rulesets${RULE_ID} \
-            --input -
+          repositories: ${{ matrix.repository }}
+          branch: master
