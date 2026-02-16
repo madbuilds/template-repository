@@ -5,9 +5,15 @@
 
 name: publish RELEASE
 on:
-  release:
+  workflow_dispatch: #Triggers on button click
+  release: #Triggers on release creation
     types:
       - published
+  push: #Triggers on push to branches
+    branches:
+      - 'master'
+      - 'feature/**'
+      - 'hotfix/**'
 
 jobs:
   validate: # SERVICE LEVEL - CHECK AND SHARE VARIABLES
@@ -19,14 +25,12 @@ jobs:
       - uses: actions/checkout@v4
       - id: repository
         uses: ./.github/actions/common/validate
-        with:
-          type: 'release'
 
   publish:
     needs: validate
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write     # write - if you want to push changes
       packages: write     # Crucial for pushing package
       attestations: write # Optional, for supply-chain security
       id-token: write     # Optional, for OIDC
@@ -38,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: image
-        uses: ./.github/actions/publish/release/docker
+        uses: ./.github/actions/publish/docker
 
   deploy:
     environment: ${{ needs.validate.outputs.environment }}
@@ -54,6 +58,8 @@ jobs:
           verify_access: no
           helm_files: ./.github/k8s/values.yml
           helm_properties: |
-            service.environment=dev
+#TODO - check service.environment template variable in k8s
+
+            service.environment=${{ needs.validate.outputs.environment }}
             service.image.name=nginx
             service.image.tag=1.27-alpine
