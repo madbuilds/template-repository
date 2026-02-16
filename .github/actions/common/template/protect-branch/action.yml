@@ -125,7 +125,7 @@ runs:
     - id: summary
       shell: bash
       run: |
-        echo "---" >> "$GITHUB_STEP_SUMMARY""
+        echo "---" >> "$GITHUB_STEP_SUMMARY"
         echo "- repo: \`${{ inputs.owner }}/${{ inputs.repositories }}\`" >> "$GITHUB_STEP_SUMMARY"
         echo "- ruleset: \`${{ steps.init.outputs.rulename }}\`" >> "$GITHUB_STEP_SUMMARY"
         echo "- request: \`${{ steps.target.outputs.method }}:${{ steps.target.outputs.path }}\`" >> "$GITHUB_STEP_SUMMARY"
