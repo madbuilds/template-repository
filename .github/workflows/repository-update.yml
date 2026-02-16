@@ -22,6 +22,7 @@ jobs:
     steps:
       - id: matrix
         run: |
+          json=""
           while IFS= read -r repository; do
             [[ -z "$repository" ]] && continue
             if [[ -z "$json" ]]; then
