@@ -8,7 +8,6 @@ on:
 
 env:
   REPOSITORIES: |
-    telegram-donation-ui
     app-logging
     pritunl
     some-service
