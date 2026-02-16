@@ -83,56 +83,40 @@ runs:
         # bypass_actors maintain -> 2
         # bypass_actors write -> 4
         # bypass_actors admin -> 5
-        PAYLOAD="$(cat <<EOF
+        PAYLOAD="$(jq -n '
         {
-          "name": "${{ steps.init.outputs.rulename }}",
-          "target": "branch",
-          "enforcement": "active",
-          "bypass_actors": [
-            {
-              "actor_id": 1,
-              "actor_type": "OrganizationAdmin",
-              "bypass_mode": "pull_request"
-            },
-            {
-              "actor_id": 5,
-              "actor_type": "RepositoryRole",
-              "bypass_mode": "pull_request"
-            },
-            {
-              "actor_id": 1107463,
-              "actor_type": "Integration",
-              "bypass_mode": "always"
-            }
+          name: "${{ steps.init.outputs.rulename }}",
+          target: "branch",
+          enforcement: "active",
+          bypass_actors: [
+            {actor_id: 1,       actor_type: "OrganizationAdmin", bypass_mode: "pull_request"},
+            {actor_id: 5,       actor_type: "RepositoryRole",    bypass_mode: "pull_request"},
+            {actor_id: 1107463, actor_type: "Integration",       bypass_mode: "always"}
           ],
-          "conditions": {
-            "ref_name": {
-              "include": ["~DEFAULT_BRANCH"],
-              "exclude": []
-            }
+          conditions: {
+            ref_name: {
+              include: ["~DEFAULT_BRANCH"], 
+              exclude: [] 
+            } 
           },
-          "rules": [
-            { "type": "deletion" },
-            { "type": "required_signatures" },
-            {
-              "type": "pull_request",
-              "parameters": {
-                "required_approving_review_count": 1,
-                "dismiss_stale_reviews_on_push": true,
-                "require_code_owner_review": false,
-                "require_last_push_approval": false,
-                "required_review_thread_resolution": true,
-                "automatic_copilot_code_review_enabled": false,
-                "allowed_merge_methods": [ "merge", "squash" ]
-              }
-            },
-            { "type": "non_fast_forward" }
+          rules: [
+            { type: "deletion" },
+            { type: "required_signatures"},
+            { type: "pull_request", parameters: {
+              required_approving_review_count: 1,
+              dismiss_stale_reviews_on_push: true,
+              require_code_owner_review: false,
+              require_last_push_approval: false,
+              required_review_thread_resolution: true,
+              automatic_copilot_code_review_enabled: false,
+              allowed_merge_methods: ["merge","squash"]
+            }},
+            { type: "non_fast_forward" }
           ]
         }
-        EOF
-        )"
+        ')"
         
-        echo "${PAYLOAD}" | gh api \
+        printf '%s' "$PAYLOAD" | | gh api \
           --method ${{ steps.target.outputs.method }} \
           -H "Accept: application/vnd.github+json" \
           ${{ steps.target.outputs.path }} \
