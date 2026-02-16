@@ -133,9 +133,9 @@ runs:
         )"
         
         echo "${PAYLOAD}" | gh api \
-          --method ${{ steps.init.outputs.method }} \
+          --method ${{ steps.target.outputs.method }} \
           -H "Accept: application/vnd.github+json" \
-          ${{ steps.init.outputs.path }} \
+          ${{ steps.target.outputs.path }} \
           --input -
 
     - id: summary
@@ -144,4 +144,4 @@ runs:
         echo "---" >> "$GITHUB_STEP_SUMMARY""
         echo "- repo: \`${{ inputs.owner }}/${{ inputs.repositories }}\`" >> "$GITHUB_STEP_SUMMARY"
         echo "- ruleset: \`${{ steps.init.outputs.rulename }}\`" >> "$GITHUB_STEP_SUMMARY"
-        echo "- request: \`${{ steps.init.outputs.method }}:${{ steps.init.outputs.path }}\`" >> "$GITHUB_STEP_SUMMARY"
+        echo "- request: \`${{ steps.target.outputs.method }}:${{ steps.target.outputs.path }}\`" >> "$GITHUB_STEP_SUMMARY"
