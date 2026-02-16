@@ -116,7 +116,7 @@ runs:
         }
         ')"
         
-        printf '%s' "$PAYLOAD" | | gh api \
+        printf '%s' "$PAYLOAD" | gh api \
           --method ${{ steps.target.outputs.method }} \
           -H "Accept: application/vnd.github+json" \
           ${{ steps.target.outputs.path }} \
