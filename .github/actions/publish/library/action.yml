@@ -14,7 +14,7 @@ inputs:
     description: actor to use
     required: false
     default: ${{ github.actor }}
-  github_token:
+  GITHUB_TOKEN:
     description: GITHUB TOKEN
     required: false
     default: '${{ github.token }}'
@@ -26,19 +26,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - id: github
-      shell: bash
-      run: |
-        if [ -n "${{ inputs.github_token }}" ]; then
-          echo "token=${{ inputs.github_token }}" >> $GITHUB_OUTPUT
-        else
-          if [ -n "${{ env.GITHUB_TOKEN }}" ]; then
-            echo "token=${{ env.GITHUB_TOKEN }}" >> $GITHUB_OUTPUT
-          else
-            echo "::error::ERROR: GITHUB_TOKEN is not set"
-            exit 1
-          fi
-        fi
 
     - id: init
       shell: bash
@@ -91,7 +78,7 @@ runs:
         mvn dependency:go-offline --settings ${{ inputs.settings_path }}
       env:
         GITHUB_ACTOR: ${{ inputs.github_actor }}
-        GITHUB_TOKEN: ${{ steps.github.outputs.token }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ inputs.github_repository }}
 
     - id: pom
@@ -101,7 +88,7 @@ runs:
         mvn versions:set -DnewVersion=${{ steps.init.outputs.version }} --settings ${{ inputs.settings_path }}
       env:
         GITHUB_ACTOR: ${{ inputs.github_actor }}
-        GITHUB_TOKEN: ${{ steps.github.outputs.token }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ inputs.github_repository }}
 
     - id: deploy
@@ -112,7 +99,7 @@ runs:
         mvn --batch-mode deploy --settings ${{ inputs.settings_path }}
       env:
         GITHUB_ACTOR: ${{ inputs.github_actor }}
-        GITHUB_TOKEN: ${{ steps.github.outputs.token }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ inputs.github_repository }}
 
     - id: increment
@@ -129,7 +116,7 @@ runs:
         mvn versions:set -DnewVersion=${NEXT_VERSION} --settings ${{ inputs.settings_path }}
       env:
         GITHUB_ACTOR: ${{ inputs.github_actor }}
-        GITHUB_TOKEN: ${{ steps.github.outputs.token }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ inputs.github_repository }}
 
     - id: commit
