@@ -35,5 +35,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build and Publish
-#TODO - update action
         uses: ./.github/actions/publish/library
