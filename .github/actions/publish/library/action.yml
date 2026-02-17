@@ -1,5 +1,5 @@
 name: 'PUBLISH library to artifactory'
-description: 'Deploys library version'deploys library release to maven repo and increase next snapshot version
+description: 'Deploys library version to artifactory (+increment version on release)'
 
 inputs:
   settings_path:
