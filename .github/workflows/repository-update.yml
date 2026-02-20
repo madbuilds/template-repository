@@ -61,6 +61,8 @@ jobs:
             MADBUILDS_SSH_PRIVATE_USER=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_USER }}
           key: MADBUILDS_SSH_PRIVATE_KEY
           value: ${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_KEY }}
+          key_2: KUBECONFIG
+          value_2: ${{ secrets.KUBECONFIG_PROD }}
 
       - name: update test secrets
         uses: ./.github/actions/common/template/update-secrets
@@ -74,6 +76,8 @@ jobs:
             MADBUILDS_SSH_PRIVATE_USER=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_USER }}
           key: MADBUILDS_SSH_PRIVATE_KEY
           value: ${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_KEY }}
+          key_2: KUBECONFIG
+          value_2: ${{ secrets.KUBECONFIG_TEST }}
 
       - name: update other secrets
         uses: ./.github/actions/common/template/update-secrets

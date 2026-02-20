@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ .Values.service.name }} # deployment will create pods with label app=example
+        app: {{ .Values.service.name }} # deployment will label pods with app=example
     spec:
       containers:
         - name: app

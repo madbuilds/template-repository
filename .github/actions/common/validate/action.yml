@@ -12,6 +12,9 @@ inputs:
     default: "github-actions[bot]"
 
 outputs:
+  repository_name:
+    description: 'returns name of the repository'
+    value: ${{ steps.repository.outputs.name }}
   repository_type:
     description: 'returns type of the repository specified in custom properties during repo creation'
     value: ${{ steps.repository.outputs.type }}
@@ -22,7 +25,7 @@ outputs:
     description: 'should be published?'
     value: ${{ steps.should_publish.outputs.required }}
   environment:
-    description: 'provides environment name to be used for envitonment variables'
+    description: 'provides environment name to be used for environment variables'
     value: ${{ steps.environment.outputs.name }}
 
 runs:
@@ -102,7 +105,15 @@ runs:
       id: repository
       shell: bash
       run: |
+        NAME=${{ github.event.repository.name }}
         TYPE=$(jq -r '.repository.custom_properties.type     | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
         LANG=$(jq -r '.repository.custom_properties.language | select(. != null and . != "unknown") // "default"' < "$GITHUB_EVENT_PATH")
+        echo "name=$NAME" >> $GITHUB_OUTPUT
         echo "type=$TYPE" >> $GITHUB_OUTPUT
         echo "language=$LANG" >> $GITHUB_OUTPUT
+
+    - name: summary
+      shell: bash
+      run: |
+        echo "---" >> $GITHUB_STEP_SUMMARY
+        echo "${{ steps.repository.outputs.language }}:${{ steps.repository.outputs.type }} > ${{ steps.environment.outputs.name }}:${{ steps.repository.outputs.name }}" >> $GITHUB_STEP_SUMMARY

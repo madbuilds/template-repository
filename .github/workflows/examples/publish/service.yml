@@ -21,6 +21,7 @@ jobs:
     outputs:
       environment: ${{ steps.repository.outputs.environment }}
       repository_type: ${{ steps.repository.outputs.repository_type }}
+      repository_name: ${{ steps.repository.outputs.repository_name }}
     steps:
       - uses: actions/checkout@v4
       - id: repository
@@ -58,8 +59,7 @@ jobs:
           verify_access: no
           helm_files: ./.github/k8s/values.yml
           helm_properties: |
-#TODO - check service.environment template variable in k8s
-
+            service.name=${{ needs.validate.outputs.repository_name }}
             service.environment=${{ needs.validate.outputs.environment }}
             service.image.name=nginx
             service.image.tag=1.27-alpine
