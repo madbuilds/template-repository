@@ -24,4 +24,4 @@ spec:
   tls:
     - hosts:
         - {{ .Values.service.name }}{{- if ne .Values.service.environment "PRODUCTION" }}.dev{{- end }}.k3s.devim.keenetic.pro
-      secretName: {{ .Values.service.name }}-tls-secret
+      secretName: app-{{ .Values.service.name }}-tls-secret
