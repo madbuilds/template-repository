@@ -8,6 +8,7 @@ on:
 
 env:
   REPOSITORIES: |
+    test
     app-logging
     pritunl
     some-service
