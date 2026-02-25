@@ -1,9 +1,9 @@
-# File .github/workflows/publish-release.yml
+# File .github/workflows/publish.yml
 
 # Runs on creating a new release tag (when this release marked as published)
 # this workflow publishes maven artifact and does increment the next SNAPSHOT version
 
-name: publish RELEASE
+name: PUBLISH library
 on:
   workflow_dispatch: #Triggers on button click
   release: #Triggers on release creation
