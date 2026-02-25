@@ -1,8 +1,8 @@
-# FILE: ./.github/actions/common/template/execute-workflow/action.yml
-# DESCRIPTION: executes workflow in the target repository
+# FILE: ./.github/actions/common/template/protect-btanch/action.yml
+# DESCRIPTION: creates branch protection rules for the target repository
 
-name: 'UPDATE repository secrets'
-description: 'Update repository secrets (and environment)'
+name: 'PROTECT repository branch'
+description: 'Update repository protection rules'
 
 inputs:
   GITHUB_TOKEN:

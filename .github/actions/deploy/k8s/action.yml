@@ -1,4 +1,4 @@
-# FILE: ./.github/actions/deploy/k3s/action.yml
+# FILE: ./.github/actions/deploy/k8s/action.yml
 # DESCRIPTION: allows deploying application to kubernetes cluster using kubeconfig.
 
 name: 'Deploy to Kubernetes Cluster'
