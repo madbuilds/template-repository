@@ -8,6 +8,7 @@ on:
 
 env:
   REPOSITORIES: |
+    test
     some-service
 
   SYNC_APP_ID:        ${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
