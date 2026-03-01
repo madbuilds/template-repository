@@ -8,8 +8,11 @@ on:
 
 env:
   REPOSITORIES: |
-    test
+    telegram-donation-ui
+    app-logging
+    pritunl
     some-service
+    sbot
 
   SYNC_APP_ID:        ${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
   SYNC_CLIENT_ID:     ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
