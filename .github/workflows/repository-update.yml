@@ -8,11 +8,12 @@ on:
 
 env:
   REPOSITORIES: |
-    telegram-donation-ui
-    app-logging
-    pritunl
     some-service
-    sbot
+
+  SYNC_APP_ID:        ${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
+  SYNC_CLIENT_ID:     ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
+  SYNC_CLIENT_SECRET: ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_SECRET }}
+  SYNC_PRIVATE_KEY:   ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
 
 jobs:
   setup:
@@ -40,12 +41,17 @@ jobs:
       matrix:
         repository: ${{ fromJSON(needs.setup.outputs.matrix) }}
     steps:
+      - id: auth # https://github.com/tibdex/github-app-token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ env.SYNC_APP_ID }}
+          private_key: ${{ env.SYNC_PRIVATE_KEY }}
       - uses: actions/checkout@v4
 
       - name: update variables
         uses: ./.github/actions/common/template/update-secrets
         with:
-          GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
+          GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
           variables: |
             TEST_VAR="Set from composite action"
@@ -53,7 +59,7 @@ jobs:
       - name: update prod secrets
         uses: ./.github/actions/common/template/update-secrets
         with:
-          GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
+          GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
           environment: PRODUCTION
           secrets: |
@@ -68,7 +74,7 @@ jobs:
       - name: update test secrets
         uses: ./.github/actions/common/template/update-secrets
         with:
-          GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
+          GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
           environment: TEST
           secrets: |
@@ -83,7 +89,7 @@ jobs:
       - name: update other secrets
         uses: ./.github/actions/common/template/update-secrets
         with:
-          GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
+          GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
           secrets: |
             MADBUILDS_SYNCAPP_APP_ID=${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
@@ -95,13 +101,13 @@ jobs:
       - name: init repository
         uses: ./.github/actions/common/template/execute-workflow
         with:
-          GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
+          GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
           workflow: repository-init.yml
 
       - name: update branch protection
         uses: ./.github/actions/common/template/protect-branch
         with:
-          GITHUB_TOKEN: ${{ secrets.USER_PAT_FULL }}
+          GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
           branch: master
