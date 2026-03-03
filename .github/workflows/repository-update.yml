@@ -67,11 +67,6 @@ jobs:
           environment: PRODUCTION
           key: KUBECONFIG
           value: ${{ secrets.KUBECONFIG_PROD }}
-          delete_secrets: |
-            MADBUILDS_SSH_PRIVATE_HOST
-            MADBUILDS_SSH_PRIVATE_PORT
-            MADBUILDS_SSH_PRIVATE_USER
-            MADBUILDS_SSH_PRIVATE_KEY
 
       - name: update test secrets
         uses: ./.github/actions/common/template/update-secrets
@@ -81,11 +76,6 @@ jobs:
           environment: TEST
           key: KUBECONFIG
           value: ${{ secrets.KUBECONFIG_TEST }}
-          delete_secrets: |
-            MADBUILDS_SSH_PRIVATE_HOST
-            MADBUILDS_SSH_PRIVATE_PORT
-            MADBUILDS_SSH_PRIVATE_USER
-            MADBUILDS_SSH_PRIVATE_KEY
 
       - name: update other secrets
         uses: ./.github/actions/common/template/update-secrets

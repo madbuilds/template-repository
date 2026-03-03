@@ -113,6 +113,7 @@ runs:
 #   UPDATE
 #   =========================================================================
     - id: variables
+      if: ${{ inputs.variables != '' }}
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       shell: bash
@@ -148,6 +149,7 @@ runs:
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
 
     - id: secrets
+      if: ${{ inputs.secrets != '' }}
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       shell: bash
@@ -202,6 +204,7 @@ runs:
 #   DELETE
 #   =========================================================================
     - id: delete_variables
+      if: ${{ inputs.delete_variables != '' }}
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       shell: bash
@@ -226,6 +229,7 @@ runs:
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
 
     - id: delete_secrets
+      if: ${{ inputs.delete_secrets != '' }}
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       shell: bash
