@@ -222,7 +222,7 @@ runs:
             echo "[template] - variables: deleting: $repository:$variable"
             gh variable delete "$variable" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
         
-          done < <(echo "${{ inputs.variables }}" | tr -s '\n')
+          done < <(echo "${{ inputs.delete_variables }}" | tr -s '\n')
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
 
     - id: delete_secrets
@@ -246,5 +246,5 @@ runs:
             echo "[template] - secrets: deleting: $repository:$secret"
             gh secret delete "$key" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
 
-          done < <(echo "${{ inputs.secrets }}" | tr -s '\n')
+          done < <(echo "${{ inputs.delete_secrets }}" | tr -s '\n')
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
