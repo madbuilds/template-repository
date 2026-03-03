@@ -149,7 +149,7 @@ runs:
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
 
     - id: secrets
-      if: ${{ inputs.secrets != '' }}
+      if: ${{ inputs.secrets != '' || inputs.key != '' || inputs.key_2 != '' || inputs.key_3 != '' || inputs.key_4 != '' || inputs.key_5 != ''}}
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       shell: bash
