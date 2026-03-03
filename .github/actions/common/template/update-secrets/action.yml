@@ -19,6 +19,12 @@ inputs:
   variables:
     description: 'variables to update (key=value pairs)'
     required: false
+  delete_secrets:
+    description: 'secrets to delete (keys)'
+    required: false
+  delete_variables:
+    description: 'variables to delete (keys)'
+    required: false
 
   owner:
     description: 'owner of the repository <owner>/<repo>'
@@ -103,6 +109,9 @@ runs:
           done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
         fi
 
+#   =========================================================================
+#   UPDATE
+#   =========================================================================
     - id: variables
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
@@ -116,7 +125,7 @@ runs:
         while read -r repository; do
           [[ -z "$repository" ]] && continue
           echo ""
-          echo "[template] - variables: Updating variables in: $repository"
+          echo "[template] - variables: Updating variables in: $repository ${{ inputs.environment }}"
         
           while read -r variable; do
             [[ -z "$variable" ]] && continue
@@ -187,4 +196,55 @@ runs:
             printf '%s' "${{ inputs.value_5 }}" | gh secret set "${{ inputs.key_5 }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
           fi
         
+        done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
+
+#   =========================================================================
+#   DELETE
+#   =========================================================================
+    - id: delete_variables
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+      shell: bash
+      run: |
+        env_args=()
+        if [[ -n "${{ inputs.environment }}" ]]; then
+          env_args+=(--env "${{ inputs.environment }}")
+        fi
+
+        while read -r repository; do
+          [[ -z "$repository" ]] && continue
+          echo ""
+          echo "[template] - variables: Deleting variables in: $repository ${{ inputs.environment }}"
+
+          while read -r variable; do
+            [[ -z "$variable" ]] && continue
+
+            echo "[template] - variables: deleting: $repository:$variable"
+            gh variable delete "$variable" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
+        
+          done < <(echo "${{ inputs.variables }}" | tr -s '\n')
+        done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
+
+    - id: delete_secrets
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+      shell: bash
+      run: |
+        env_args=()
+        if [[ -n "${{ inputs.environment }}" ]]; then
+          env_args+=(--env "${{ inputs.environment }}")
+        fi
+
+        while read -r repository; do
+          [[ -z "$repository" ]] && continue
+          echo ""
+          echo "[template] - secrets: Deleting secrets in: $repository ${{ inputs.environment }}"
+
+          while read -r secret; do
+            [[ -z "$secret" ]] && continue
+
+            echo "[template] - secrets: deleting: $repository:$secret"
+            gh secret delete "$key" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
+
+          done < <(echo "${{ inputs.secrets }}" | tr -s '\n')
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
