@@ -11,7 +11,6 @@ env:
     telegram-donation-ui
     app-logging
     pritunl
-    some-service
     sbot
 
   SYNC_APP_ID:        ${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
@@ -66,14 +65,8 @@ jobs:
           GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
           environment: PRODUCTION
-          secrets: |
-            MADBUILDS_SSH_PRIVATE_HOST=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_HOST }}
-            MADBUILDS_SSH_PRIVATE_PORT=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_PORT }}
-            MADBUILDS_SSH_PRIVATE_USER=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_USER }}
-          key: MADBUILDS_SSH_PRIVATE_KEY
-          value: ${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_KEY }}
-          key_2: KUBECONFIG
-          value_2: ${{ secrets.KUBECONFIG_PROD }}
+          key: KUBECONFIG
+          value: ${{ secrets.KUBECONFIG_PROD }}
 
       - name: update test secrets
         uses: ./.github/actions/common/template/update-secrets
@@ -81,14 +74,8 @@ jobs:
           GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
           environment: TEST
-          secrets: |
-            MADBUILDS_SSH_PRIVATE_HOST=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_HOST }}
-            MADBUILDS_SSH_PRIVATE_PORT=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_PORT }}
-            MADBUILDS_SSH_PRIVATE_USER=${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_USER }}
-          key: MADBUILDS_SSH_PRIVATE_KEY
-          value: ${{ secrets.MADBUILDS_SSH_DEV_PRIVATE_KEY }}
-          key_2: KUBECONFIG
-          value_2: ${{ secrets.KUBECONFIG_TEST }}
+          key: KUBECONFIG
+          value: ${{ secrets.KUBECONFIG_TEST }}
 
       - name: update other secrets
         uses: ./.github/actions/common/template/update-secrets
