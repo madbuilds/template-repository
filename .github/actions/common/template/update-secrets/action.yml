@@ -244,7 +244,7 @@ runs:
             [[ -z "$secret" ]] && continue
 
             echo "[template] - secrets: deleting: $repository:$secret"
-            gh secret delete "$key" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
+            gh secret delete "$secret" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
 
           done < <(echo "${{ inputs.delete_secrets }}" | tr -s '\n')
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
