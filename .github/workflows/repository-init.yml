@@ -31,7 +31,7 @@ jobs:
       repository_type: ${{ steps.repository.outputs.repository_type }}
       repository_language: ${{ steps.repository.outputs.repository_language }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - id: repository
         uses: ./.github/actions/common/validate
 
@@ -46,7 +46,7 @@ jobs:
           private_key: ${{ env.SYNC_PRIVATE_KEY }}
 
       - id: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0  # Ensures full history is available for PR
           token: '${{ steps.auth.outputs.token }}'

@@ -49,7 +49,7 @@ jobs:
         with:
           app_id: ${{ env.SYNC_APP_ID }}
           private_key: ${{ env.SYNC_PRIVATE_KEY }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: update variables
         uses: ./.github/actions/common/template/update-secrets
