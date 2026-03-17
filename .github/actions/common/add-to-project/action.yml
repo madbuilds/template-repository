@@ -49,7 +49,7 @@ runs:
             ITEM_ID=$(gh api "/repos/${{ github.repository }}/pulls/${{ inputs.pr_number }}" | jq -r '.node_id')
           fi
         else
-          echo "[board] - item: using contextual issue"
+          echo "[board] - item: looking for contextual item"
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             echo "[board] - item: using contextual pull_request"
             ITEM_ID="${{ github.event.pull_request.node_id }}"
@@ -103,7 +103,7 @@ runs:
         gh api graphql -f query='
           mutation($projectId: ID!, $itemId: ID!) {
             addProjectV2ItemById(input: {projectId: $projectId, contentId: $itemId}) {
-              projectV2Item { id }
+              item { id }
             }
           }
         ' -f projectId="${{ steps.project.outputs.id }}" -F itemId="${{ steps.item.outputs.id }}"
