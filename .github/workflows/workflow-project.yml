@@ -21,16 +21,14 @@ env:
   SYNC_CLIENT_ID:     ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
   SYNC_CLIENT_SECRET: ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_SECRET }}
   SYNC_PRIVATE_KEY:   ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
-  PROJECT_OWNER: madbuilds
+  PROJECT_OWNER: ${{ github.repository_owner }}
   PROJECT_ID:    7
+
+permissions:
+  contents: read # to check out private repos
 
 jobs:
   board-update:
-    permissions:
-      issues: write
-      pull-requests: read
-      repository-projects: write
-
     name: add to board
     runs-on: ubuntu-latest
     steps:
@@ -53,7 +51,7 @@ jobs:
       - uses: actions/github-script@v7
         if: github.event_name == 'issues'
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.auth.outputs.token }}
           script: |
             const title = context.payload.issue.title;
             const issue_number = context.payload.issue.number;
