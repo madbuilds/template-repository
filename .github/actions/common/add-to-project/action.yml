@@ -109,3 +109,18 @@ runs:
         ' -f projectId="${{ steps.project.outputs.id }}" -F itemId="${{ steps.item.outputs.id }}"
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+
+    - id: summary
+      shell: bash
+      run: |
+        echo "> OUTPUT SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+        echo "" >> "$GITHUB_STEP_SUMMARY"
+        echo "item been added to board:" >> "$GITHUB_STEP_SUMMARY"
+        
+        echo "https://github.com/orgs/${{ inputs.project_owner }}/projects/${{ inputs.project_number }}" >> "$GITHUB_STEP_SUMMARY"
+        if [ -n "${{ inputs.issue_number }}" ]; then
+          echo "issue - https://github.com/${{ github.repository }}/issues/${{ inputs.issue_number }}" >> "$GITHUB_STEP_SUMMARY"
+        fi
+        if  [ -n "${{ inputs.pr_number }}" ]; then
+          echo "pr    - https://github.com//${{ github.repository }}/pull/${{ inputs.pr_number }}" >> "$GITHUB_STEP_SUMMARY"
+        fi
