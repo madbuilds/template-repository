@@ -14,6 +14,9 @@ spec:
       labels:
         app: {{ .Values.service.name }} # deployment will label pods with app=example
     spec:
+      {{- if .Values.deployment.account }}
+      serviceAccountName: {{ .Values.deployment.account }}
+      {{- end }}
       containers:
         - name: app
           image: {{ .Values.service.image.name }}:{{ default "latest" .Values.service.image.tag }}

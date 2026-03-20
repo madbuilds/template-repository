@@ -65,6 +65,8 @@ jobs:
           GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
           environment: PRODUCTION
+          secrets: |
+            DEPLOYMENT_ACCOUNT=${{ secrets.DEPLOYMENT_ACCOUNT_PROD }}
           key: KUBECONFIG
           value: ${{ secrets.KUBECONFIG_PROD }}
 
@@ -74,6 +76,8 @@ jobs:
           GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
           environment: TEST
+          secrets: |
+            DEPLOYMENT_ACCOUNT=${{ secrets.DEPLOYMENT_ACCOUNT_TEST }}
           key: KUBECONFIG
           value: ${{ secrets.KUBECONFIG_TEST }}
 
