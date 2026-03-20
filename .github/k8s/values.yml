@@ -8,4 +8,5 @@ service:
     TZ: Europe/Moscow
 
 deployment:
+  account: default
   environment: TEST
