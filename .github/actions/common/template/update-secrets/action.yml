@@ -161,7 +161,7 @@ runs:
         while read -r repository; do
           [[ -z "$repository" ]] && continue
           echo ""
-          echo "[template] - variables: Updating variables for - $repository:${{ inputs.app }} ${{ inputs.environment }}"
+          echo "[template] - variables: Updating variables for - $repository ${{ inputs.environment }}"
         
           while read -r variable; do
             [[ -z "$variable" ]] && continue
@@ -177,30 +177,30 @@ runs:
               value="${value:1:${#value}-2}"
             fi
   
-            echo "[template] - variables: updating: $repository:${{ inputs.app }}:$key"
-            gh variable set "$key" "${env_args[@]}" --body "$value" --app ${{ inputs.app }} --repo "https://github.com/${{ inputs.owner }}/$repository"
+            echo "[template] - variables: updating: $repository:$key"
+            gh variable set "$key" "${env_args[@]}" --body "$value" --repo "https://github.com/${{ inputs.owner }}/$repository"
         
           done < <(echo "${{ inputs.variables }}" | tr -s '\n')
 
           if [[ -n "${{ inputs.variable_key }}" && -n "${{ inputs.variable_value }}" ]]; then
-            echo "[template] - secrets: updating: $repository:${{ inputs.app }}:${{ inputs.variable_key }}"
-            printf '%s' "${{ inputs.variable_value }}" | gh variable set "${{ inputs.variable_key }}" "${env_args[@]}" --app ${{ inputs.app }} --repo "https://github.com/${{ inputs.owner }}/$repository"
+            echo "[template] - secrets: updating: $repository:${{ inputs.variable_key }}"
+            printf '%s' "${{ inputs.variable_value }}" | gh variable set "${{ inputs.variable_key }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
           fi
           if [[ -n "${{ inputs.variable_key_2 }}" && -n "${{ inputs.variable_value_2 }}" ]]; then
-            echo "[template] - secrets: updating: $repository:${{ inputs.app }}:${{ inputs.variable_key_2 }}"
-            printf '%s' "${{ inputs.variable_value_2 }}" | gh variable set "${{ inputs.variable_key_2 }}" "${env_args[@]}" --app ${{ inputs.app }} --repo "https://github.com/${{ inputs.owner }}/$repository"
+            echo "[template] - secrets: updating: $repository:${{ inputs.variable_key_2 }}"
+            printf '%s' "${{ inputs.variable_value_2 }}" | gh variable set "${{ inputs.variable_key_2 }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
           fi
           if [[ -n "${{ inputs.variable_key_3 }}" && -n "${{ inputs.variable_value_3 }}" ]]; then
-            echo "[template] - secrets: updating: $repository:${{ inputs.app }}:${{ inputs.variable_key_3 }}"
-            printf '%s' "${{ inputs.variable_value_3 }}" | gh variable set "${{ inputs.variable_key_3 }}" "${env_args[@]}" --app ${{ inputs.app }} --repo "https://github.com/${{ inputs.owner }}/$repository"
+            echo "[template] - secrets: updating: $repository:${{ inputs.variable_key_3 }}"
+            printf '%s' "${{ inputs.variable_value_3 }}" | gh variable set "${{ inputs.variable_key_3 }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
           fi
           if [[ -n "${{ inputs.variable_key_4 }}" && -n "${{ inputs.variable_value_4 }}" ]]; then
-            echo "[template] - secrets: updating: $repository:${{ inputs.app }}:${{ inputs.variable_key_4 }}"
-            printf '%s' "${{ inputs.variable_value_4 }}" | gh variable set "${{ inputs.variable_key_4 }}" "${env_args[@]}" --app ${{ inputs.app }} --repo "https://github.com/${{ inputs.owner }}/$repository"
+            echo "[template] - secrets: updating: $repository:${{ inputs.variable_key_4 }}"
+            printf '%s' "${{ inputs.variable_value_4 }}" | gh variable set "${{ inputs.variable_key_4 }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
           fi
           if [[ -n "${{ inputs.variable_key_5 }}" && -n "${{ inputs.variable_value_5 }}" ]]; then
-            echo "[template] - secrets: updating: $repository:${{ inputs.app }}:${{ inputs.variable_key_5 }}"
-            printf '%s' "${{ inputs.variable_value_5 }}" | gh variable set "${{ inputs.variable_key_5 }}" "${env_args[@]}" --app ${{ inputs.app }} --repo "https://github.com/${{ inputs.owner }}/$repository"
+            echo "[template] - secrets: updating: $repository:${{ inputs.variable_key_5 }}"
+            printf '%s' "${{ inputs.variable_value_5 }}" | gh variable set "${{ inputs.variable_key_5 }}" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
           fi
           
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
@@ -274,13 +274,13 @@ runs:
         while read -r repository; do
           [[ -z "$repository" ]] && continue
           echo ""
-          echo "[template] - variables: Deleting variables from - $repository:${{ inputs.app }} ${{ inputs.environment }}"
+          echo "[template] - variables: Deleting variables from - $repository ${{ inputs.environment }}"
 
           while read -r variable; do
             [[ -z "$variable" ]] && continue
 
-            echo "[template] - variables: deleting: $repository:${{ inputs.app }}:$variable"
-            gh variable delete "$variable" "${env_args[@]}" --app ${{ inputs.app }} --repo "https://github.com/${{ inputs.owner }}/$repository"
+            echo "[template] - variables: deleting: $repository:$variable"
+            gh variable delete "$variable" "${env_args[@]}" --repo "https://github.com/${{ inputs.owner }}/$repository"
         
           done < <(echo "${{ inputs.delete_variables }}" | tr -s '\n')
         done < <(echo "${{ inputs.repositories }}" | tr -s '[:space:]' '\n')
