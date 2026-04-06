@@ -80,11 +80,23 @@ jobs:
           key: KUBECONFIG
           value: ${{ secrets.KUBECONFIG_TEST }}
 
-      - name: update other secrets
+      - name: update other secrets (action)
         uses: ./.github/actions/common/template/update-secrets
         with:
           GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
+          secrets: |
+            MADBUILDS_SYNCAPP_APP_ID=${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
+            MADBUILDS_SYNCAPP_CLIENT_ID=${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
+            MADBUILDS_SYNCAPP_CLIENT_SECRET=${{ secrets.MADBUILDS_SYNCAPP_CLIENT_SECRET }}
+          key: MADBUILDS_SYNCAPP_PRIVATE_KEY
+          value: ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
+      - name: update other secrets (dependabot)
+        uses: ./.github/actions/common/template/update-secrets
+        with:
+          GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
+          repositories: ${{ matrix.repository }}
+          app: dependabot
           secrets: |
             MADBUILDS_SYNCAPP_APP_ID=${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
             MADBUILDS_SYNCAPP_CLIENT_ID=${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
