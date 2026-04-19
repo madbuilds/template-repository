@@ -66,8 +66,8 @@ jobs:
           environment: PRODUCTION
           secrets: |
             DEPLOYMENT_ACCOUNT=${{ secrets.DEPLOYMENT_ACCOUNT_PROD }}
-          key: KUBECONFIG
-          value: ${{ secrets.KUBECONFIG_PROD }}
+          secret_key: KUBECONFIG
+          secret_value: ${{ secrets.KUBECONFIG_PROD }}
 
       - name: update test secrets
         uses: ./.github/actions/common/template/update-secrets
@@ -77,10 +77,10 @@ jobs:
           environment: TEST
           secrets: |
             DEPLOYMENT_ACCOUNT=${{ secrets.DEPLOYMENT_ACCOUNT_TEST }}
-          key: KUBECONFIG
-          value: ${{ secrets.KUBECONFIG_TEST }}
+          secret_key: KUBECONFIG
+          secret_value: ${{ secrets.KUBECONFIG_TEST }}
 
-      - name: update other secrets
+      - name: update other secrets (action)
         uses: ./.github/actions/common/template/update-secrets
         with:
           GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
@@ -89,8 +89,20 @@ jobs:
             MADBUILDS_SYNCAPP_APP_ID=${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
             MADBUILDS_SYNCAPP_CLIENT_ID=${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
             MADBUILDS_SYNCAPP_CLIENT_SECRET=${{ secrets.MADBUILDS_SYNCAPP_CLIENT_SECRET }}
-          key: MADBUILDS_SYNCAPP_PRIVATE_KEY
-          value: ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
+          secret_key: MADBUILDS_SYNCAPP_PRIVATE_KEY
+          secret_value: ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
+      - name: update other secrets (dependabot)
+        uses: ./.github/actions/common/template/update-secrets
+        with:
+          GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
+          repositories: ${{ matrix.repository }}
+          app: dependabot
+          secrets: |
+            MADBUILDS_SYNCAPP_APP_ID=${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
+            MADBUILDS_SYNCAPP_CLIENT_ID=${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
+            MADBUILDS_SYNCAPP_CLIENT_SECRET=${{ secrets.MADBUILDS_SYNCAPP_CLIENT_SECRET }}
+          secret_key: MADBUILDS_SYNCAPP_PRIVATE_KEY
+          secret_value: ${{ secrets.MADBUILDS_SYNCAPP_PRIVATE_KEY }}
 
       - name: init repository
         uses: ./.github/actions/common/template/execute-workflow
