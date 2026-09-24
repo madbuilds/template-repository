@@ -10,6 +10,7 @@ env:
     app-logging
     k8s-deploy
     sbot
+    n8n
     
   SYNC_APP_ID:        ${{ secrets.MADBUILDS_SYNCAPP_APP_ID }}
   SYNC_CLIENT_ID:     ${{ secrets.MADBUILDS_SYNCAPP_CLIENT_ID }}
