@@ -55,7 +55,8 @@ jobs:
           GITHUB_TOKEN: ${{ steps.auth.outputs.token }}
           repositories: ${{ matrix.repository }}
           variables: |
-            TEST_VAR="Set from composite action"
+            DEPLOYMENT_DOMAIN=${{ vars.DEPLOYMENT_DOMAIN }}
+            TEST_VAR=${{ vars.TEST_VAR }}
 
       - name: update prod secrets
         uses: ./.github/actions/common/template/update-secrets
